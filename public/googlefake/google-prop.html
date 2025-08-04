@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Prop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #202124;
+            background-color: #fff;
+        }
+
+        header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 15px 30px;
+            font-size: 13px;
+        }
+
+        header a {
+            color: #000000de;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        header .sign-in-btn {
+            background-color: #1a73e8;
+            color: white;
+            padding: 9px 23px;
+            border-radius: 20px; /* Mycket mer rundad knapp */
+            font-weight: 500;
+            margin-left: 15px;
+            border: 1px solid transparent;
+        }
+         header .sign-in-btn:hover {
+             background-color: #1b66c9;
+             box-shadow: 0 1px 3px 1px rgba(66,64,67,.15);
+             text-decoration: none;
+         }
+
+        header .apps-icon { /* Placeholder for grid icon */
+            width: 24px;
+            height: 24px;
+            fill: #5f6368;
+            margin-left: 15px;
+            opacity: 0.7; /* Adjust as needed */
+            cursor: pointer;
+        }
+
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 100px; /* Space above buttons */
+        }
+
+        .google-logo {
+            font-size: 90px; /* Approximate size */
+            font-weight: 500; /* Adjust as needed */
+            margin-bottom: 30px;
+            letter-spacing: -5px; /* Adjust for visual match */
+        }
+        .google-logo span:nth-child(1) { color: #4285F4; } /* G */
+        .google-logo span:nth-child(2) { color: #EA4335; } /* o */
+        .google-logo span:nth-child(3) { color: #FBBC05; } /* o */
+        .google-logo span:nth-child(4) { color: #4285F4; } /* g */
+        .google-logo span:nth-child(5) { color: #34A853; } /* l */
+        .google-logo span:nth-child(6) { color: #EA4335; } /* e */
+
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 584px; /* Google's max width */
+            margin-bottom: 30px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 0 15px;
+            height: 44px;
+            background-color: #fff;
+        }
+        .search-bar:hover, .search-bar:focus-within {
+             box-shadow: 0 1px 6px rgba(32,33,36,.28);
+             border-color: rgba(223,225,229,0);
+        }
+
+
+        .search-icon { /* Placeholder for loupe */
+            width: 20px;
+            height: 20px;
+            fill: #9aa0a6;
+            margin-right: 13px;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            background: transparent;
+        }
+
+        .search-bar-icons {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar-icons svg, .search-bar-icons img { /* Mic, Lens icons */
+            width: 24px;
+            height: 24px;
+            fill: #4285f4; /* Mic color */
+            margin-left: 12px;
+            cursor: pointer;
+            opacity: 0.8; /* Adjust */
+        }
+         .search-bar-icons .clear-icon { /* X icon */
+             fill: #70757a;
+             width: 20px;
+             height: 20px;
+             display: none; /* Hidden initially */
+             cursor: pointer;
+         }
+
+
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%; /* Position below search bar */
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #dfe1e5;
+            border-top: none;
+            border-radius: 0 0 24px 24px; /* Match bottom radius */
+            box-shadow: 0 4px 6px rgba(32,33,36,.28);
+            padding-top: 10px; /* Space above first suggestion */
+            padding-bottom: 10px; /* Space below last suggestion */
+            z-index: 100;
+            display: none; /* Hidden by default */
+            font-size: 16px;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 20px 6px 50px; /* Indent text */
+            cursor: pointer;
+            position: relative; /* For icon positioning */
+        }
+        .suggestion-item:hover {
+            background-color: #eee;
+        }
+        .suggestion-item .search-icon-small { /* Loupe icon in suggestions */
+             position: absolute;
+             left: 20px;
+             top: 50%;
+             transform: translateY(-50%);
+             width: 16px;
+             height: 16px;
+             fill: #70757a;
+        }
+
+        .suggestion-item img { /* Profile pic */
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
+            position: absolute; /* Position over the loupe space */
+            left: 15px;
+        }
+         .suggestion-item.profile .suggestion-text {
+             margin-left: 30px; /* Adjust text position when profile pic is present */
+         }
+         .suggestion-item .suggestion-text span { /* Singer text */
+             display: block;
+             font-size: 12px;
+             color: #70757a;
+         }
+         .suggestion-item b { /* Bold parts */
+             font-weight: normal; /* Reset default bold */
+             color: #202124; /* Make it black */
+         }
+
+
+        .buttons {
+            margin-top: 5px; /* Ytterligare minskad marginal för att flytta upp knapparna */
+            display: flex;
+            justify-content: center;
+        }
+
+        .buttons button {
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            border-radius: 4px;
+            color: #3c4043;
+            font-size: 14px;
+            margin: 11px 4px;
+            padding: 0 16px;
+            height: 36px;
+            min-width: 54px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .buttons button:hover {
+            box-shadow: 0 1px 1px rgba(0,0,0,.1);
+            background-color: #f8f9fa;
+            border: 1px solid #dadce0;
+            color: #202124;
+        }
+
+        .language-offer {
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .language-offer a {
+            color: #1a0dab;
+            text-decoration: none;
+        }
+         .language-offer a:hover {
+             text-decoration: underline;
+         }
+
+
+        footer {
+            background-color: #f2f2f2;
+            font-size: 14px;
+            color: #70757a;
+            border-top: 1px solid #dadce0;
+        }
+        .footer-top {
+            padding: 15px 30px;
+        }
+        .footer-bottom {
+            padding: 15px 30px;
+            border-top: 1px solid #dadce0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap; /* Handle wrapping on smaller screens */
+        }
+        .footer-bottom a {
+            color: #70757a;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .footer-bottom a:hover {
+            text-decoration: underline;
+        }
+        .footer-links-left, .footer-links-right {
+            display: flex;
+            flex-wrap: wrap;
+        }
+         .footer-links-left a:first-child { margin-left: 0; }
+         .footer-links-right a:last-child { margin-right: 0; }
+
+         /* Simple Leaf Icon Placeholder */
+         .leaf-icon {
+             display: inline-block;
+             width: 12px;
+             height: 16px;
+             background-color: #34a853; /* Green color */
+             border-radius: 50% 0; /* Leaf shape */
+             margin-right: 5px;
+             vertical-align: middle;
+         }
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#">Gmail</a>
+        <a href="#">Bilder</a>
+        <!-- Placeholder for Apps Icon -->
+        <svg class="apps-icon" focusable="false" viewBox="0 0 24 24">
+            <path d="M6,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2z"></path>
+        </svg>
+        <a href="#" class="sign-in-btn">Logga in</a>
+    </header>
+
+    <main>
+        <div class="google-logo">
+            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google" style="width: 272px; height: 92px;">
+        </div>
+
+        <div class="search-container">
+            <div class="search-bar">
+                <!-- Search Icon (Loupe) -->
+                <svg class="search-icon" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input type="text" class="search-input" id="propInput" title="Search">
+                 <div class="search-bar-icons">
+                     <!-- Använder ikoner.png istället för SVG-ikoner -->
+                     <img src="ikoner.png" alt="Ikoner" style="height: 38px;">
+                 </div>
+            </div>
+            <div class="suggestions-dropdown" id="suggestions">
+                <!-- Suggestions will be populated here by JS -->
+                 <div class="suggestion-item profile">
+                     <img src="https://via.placeholder.com/32" alt="Olle Bengtsson"> <!-- Placeholder image -->
+                     <div class="suggestion-text">
+                         Olle Bengtsson
+                         <span>Säkerhetsexpert</span>
+                     </div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>franz jäger</b></div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>säkerhetsexpert</b></div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>linkedin</b></div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>kontakt</b></div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>låssystem</b></div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>föreläsning</b></div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>teknisk chef</b></div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>stockholm</b></div>
+                 </div>
+                 <div class="suggestion-item">
+                     <svg class="search-icon-small" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                     <div class="suggestion-text">olle bengtsson <b>säkerhetslösningar</b></div>
+                 </div>
+                 <!-- Add Report inappropriate predictions link -->
+                 <div style="text-align: right; padding: 10px 20px 0; font-size: 12px; color: #70757a;">
+                     Rapportera olämpliga förslag
+                 </div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button>Sök på Google</button>
+            <button>Jag har tur</button>
+        </div>
+
+        <!-- Tagit bort "Google erbjuds på: svenska" -->
+        <div style="height: 20px;"></div> <!-- Tomt utrymme istället -->
+    </main>
+
+    <footer>
+        <div class="footer-top">
+            Sverige
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-links-left">
+                <a href="#">Annonsering</a>
+                <a href="#">Företagslösningar</a>
+                <a href="#">Så fungerar Sök</a>
+            </div>
+             <div style="margin: 0 10px;"> <!-- Placeholder for leaf text -->
+                 <span class="leaf-icon"></span> Koldioxidneutral sedan 2007
+             </div>
+            <div class="footer-links-right">
+                <a href="#">Integritet</a>
+                <a href="#">Villkor</a>
+                <a href="#">Inställningar</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const inputField = document.getElementById('propInput');
+        const suggestionsDropdown = document.getElementById('suggestions');
+        const clearIcon = document.querySelector('.clear-icon');
+        const searchButton = document.querySelector('.buttons button:first-of-type'); // Get "Sök på Google" button
+        const targetText = "Olle Bengtsson";
+        let currentIndex = 0;
+
+        // Function to trigger navigation to results page
+        function triggerSearch() {
+            // Only navigate if the exact text is entered
+            if (inputField.value === targetText) {
+                window.location.href = 'google-simple.html';
+            } else {
+                // Optional: Handle cases where search is triggered with incomplete text
+                console.log("Search triggered for incomplete text:", inputField.value);
+                // For this prop, we likely don't want to navigate if text isn't exact.
+            }
+        }
+
+        inputField.addEventListener('keydown', (event) => {
+            if (event.key === 'Backspace') {
+                // Let the 'input' event handle the logic
+            } else if (event.key === 'Enter') {
+                 event.preventDefault(); // Prevent default form submission
+                 triggerSearch(); // Attempt to navigate to results page
+            } else {
+                event.preventDefault(); // Prevent typing the actual key
+                if (currentIndex < targetText.length) {
+                    inputField.value += targetText[currentIndex];
+                    currentIndex++;
+                    updateSuggestions(); // Update state based on new value
+                }
+            }
+        });
+
+        inputField.addEventListener('input', () => {
+            // This handles Backspace, Cut, Paste, etc.
+            let currentValue = inputField.value;
+            let correctPrefix = targetText.substring(0, currentValue.length);
+
+            // Force the input value to match the target text prefix
+            if (currentValue !== correctPrefix) {
+                 // Find the length of the matching prefix
+                 let matchLength = 0;
+                 while(matchLength < currentValue.length && matchLength < targetText.length && currentValue[matchLength] === targetText[matchLength]) {
+                     matchLength++;
+                 }
+                 // Reset value and index
+                 inputField.value = targetText.substring(0, matchLength);
+                 currentIndex = matchLength;
+            } else {
+                 // Value matches the prefix, just update the index
+                 currentIndex = currentValue.length;
+            }
+
+            updateSuggestions(); // Update state based on new value
+        });
+
+         // Show/hide suggestions and clear icon
+         function updateSuggestions() {
+             if (inputField.value.length > 0) {
+                 suggestionsDropdown.style.display = 'block';
+                 clearIcon.style.display = 'inline-block'; // Show clear icon
+             } else {
+                 suggestionsDropdown.style.display = 'none';
+                 clearIcon.style.display = 'none'; // Hide clear icon
+                 currentIndex = 0; // Reset index if cleared
+             }
+         }
+
+         // Handle clicking the clear icon
+         clearIcon.addEventListener('click', () => {
+             inputField.value = '';
+             currentIndex = 0;
+             updateSuggestions();
+             inputField.focus(); // Keep focus on the input
+         });
+
+         // Add click listener for the Google Search button
+         searchButton.addEventListener('click', (event) => {
+             event.preventDefault(); // Prevent any default button action
+             triggerSearch(); // Attempt to navigate to results page
+         });
+
+         // Optional: Hide suggestions if clicked outside
+         document.addEventListener('click', (event) => {
+             if (!inputField.contains(event.target) && !suggestionsDropdown.contains(event.target)) {
+                 suggestionsDropdown.style.display = 'none';
+             }
+         });
+          // Optional: Show suggestions on focus if there's text
+         inputField.addEventListener('focus', () => {
+             updateSuggestions();
+         });
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Netlify configuration file
+
+[build]
+  # Command to build the site
+  command = "npm run build"
+  # Directory containing the built site files (relative to the root)
+  publish = "dist"
+
+[build.environment]
+  # Specify the Node.js version Netlify should use (optional, but good practice)
+  # Check your local Node version if unsure (node -v)
+  # Example: NODE_VERSION = "18"
+
+[dev]
+  # Optional: Settings for Netlify Dev (local development)
+  # command = "npm run dev" # Command to start your dev server
+  # port = 5173 # Port your dev server runs on (Vite default)
+  # publish = "dist" # Directory to serve static files from (if needed)
+  # targetPort = 5173 # Port the dev server runs on

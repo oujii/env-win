@@ -1,0 +1,72 @@
+{
+  "query": "Olle Jönsson",
+  "results": {
+    "knowledgePanel": {
+      "title": "Olle Jönsson",
+      "subtitle": "Swedish singer",
+      "images": [
+        "https://via.placeholder.com/200x200.png?text=Olle+1",
+        "https://via.placeholder.com/100x100.png?text=Olle+2",
+        "https://via.placeholder.com/100x100.png?text=Olle+3"
+      ],
+      "tabs": ["Overview", "Music groups", "Songs", "Listen"],
+      "details": [
+        { "label": "Age", "value": "69 years", "subtext": "1 Dec 1955" },
+        { "label": "Spouse", "value": "Gunilla Jönsson", "image": "https://via.placeholder.com/40x40.png?text=G" }
+      ],
+      "videos": [
+        { "title": "Olle Jönsson - Du försvann som en vind - Live Lokets...", "source": "YouTube • BingoLotto", "duration": "3:32", "date": "3 Feb 2025", "thumbnail": "https://via.placeholder.com/150x84.png?text=Video+1" }
+      ],
+      "relatedLinks": [
+         { "title": "Olle Jönsson trivs med lugnet på landet - Villalivet", "source": "Villalivet.se", "thumbnail": "https://via.placeholder.com/80x80.png?text=Villa" }
+      ],
+       "listenPlatforms": [
+         {"name": "YouTube", "icon": "https://via.placeholder.com/24x24/FF0000/FFFFFF?text=YT"},
+         {"name": "Apple Music", "icon": "https://via.placeholder.com/24x24/FA57C1/FFFFFF?text=AM"},
+         {"name": "Deezer", "icon": "https://via.placeholder.com/24x24/EF5466/FFFFFF?text=DZ"},
+         {"name": "Spotify", "icon": "https://via.placeholder.com/24x24/1DB954/FFFFFF?text=SP"}
+       ]
+    },
+    "organicResults": [
+      {
+        "title": "Olle Jönsson - Wikipedia",
+        "url": "https://sv.wikipedia.org › wiki › Olle_Jönsson",
+        "displayUrl": "https://sv.wikipedia.org › wiki › Olle_Jönsson",
+        "snippet": "Bengt-Olle Jonny Jönsson, född 1 december 1955 i Kristianstads församling, Kristianstads län, är en svensk sångare. Han är sångare i det svenska dansbandet...",
+        "favicon": "https://via.placeholder.com/16x16.png?text=W"
+      },
+       {
+        "title": "Olle Jönsson i Lasse Stefanz: \"Har ett stort bekräftelsebehov\"",
+        "url": "https://www.svt.se › nyheter › lokalt › skane › olle-jons...",
+        "displayUrl": "https://www.svt.se › nyheter › lokalt › skane",
+        "snippet": "30 sep. 2024 — I över 50 år har Olle Jönsson varit frontfigur i dansbandet Lasse Stefanz. Han började redan som 12-åring. – Han är en sådan ...",
+        "favicon": "https://via.placeholder.com/16x16/00A9E0/FFFFFF?text=SVT"
+      }
+    ],
+    "relatedQuestions": [
+      "Vilka sjukdomar har Olle Jönsson?",
+      "Hur mycket tjänar Olle Jönsson?",
+      "Har Olle Jönsson Parkinsons sjukdom?",
+      "När slutade Olle Jönsson spela trummor?"
+    ],
+    "videosSection": [
+       { "title": "Olle Jönsson - Du försvann som en vind - Live Lokets...", "source": "YouTube • BingoLotto", "duration": "3:32", "date": "3 Feb 2025", "thumbnail": "https://via.placeholder.com/150x84.png?text=Video+1" },
+       { "title": "\"Inget dansband är ett dansband utan Z!\"...", "source": "TV4 Play", "duration": "12:04", "date": "19 Sep 2024", "thumbnail": "https://via.placeholder.com/150x84.png?text=Video+2" },
+       { "title": "Olle Jönsson ryter ifrån efter hälsofrågan: \"Ett jävla tjat\"", "source": "Aftonbladet TV", "duration": "0:49", "date": "24 Feb 2024", "thumbnail": "https://via.placeholder.com/150x84.png?text=Video+3" }
+    ],
+     "songsSection": [
+        {"title": "Det regnar och regnar", "album": "Röd Chevrolet • 2004"},
+        {"title": "De sista ljuva åren", "album": "Livets ljusa sida • 1988"},
+        {"title": "Du försvann som en vind", "album": "Min ängel • 1994"},
+        {"title": "Leva tills jag dör", "album": "Whiskey Barrel • 2015"},
+        {"title": "Kom och rulla i mitt rullande hus", "album": "Världens bästa Lasse Stefanz • ..."},
+        {"title": "Peppelinos bar", "album": "Peppelinos bar • 1988"},
+        {"title": "Är det kärlek du behöver", "album": "I ett fotoalbum • 1998"},
+        {"title": "Har jag sagt nåt (Did I Tell You)...", "album": "Har jag sagt nåt (Did I Tell You)..."}
+     ],
+     "relatedSearches": [
+        "När dog Olle Jönsson", "Gunilla Jönsson", "Olle Jönsson Förmögenhet", "Olle Jönsson familj",
+        "Olle Jönsson sjukdom", "Olle Jönsson ung", "Olle Jönsson bor", "Olle Jönsson barnbarn"
+     ]
+  }
+}

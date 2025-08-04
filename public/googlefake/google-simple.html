@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olle Bengtsson</title>
+    <link rel="icon" href="favicon.webp" type="image/webp">
+    <style>
+        /* Reset och grundläggande stilar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: #fff;
+            color: #202124;
+            font-size: 14px;
+            line-height: 1.58;
+        }
+        a {
+            color: #1a0dab;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        a:visited {
+            color: #681da8;
+        }
+        a:visited:hover {
+            text-decoration: underline;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 8px 24px;
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 100;
+            border-bottom: 1px solid #dfe1e5;
+        }
+        .google-logo {
+            margin-right: 28px;
+        }
+        .google-logo img {
+            height: 30px;
+            width: auto;
+        }
+        .search-box {
+            flex-grow: 1;
+            max-width: 692px;
+            height: 46px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+        }
+        .search-box input {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 0 8px;
+        }
+        .search-box .search-icon {
+            color: #9aa0a6;
+            font-size: 18px;
+        }
+        .search-box .clear-icon {
+            color: #70757a;
+            font-size: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .header-icons {
+            display: flex;
+            align-items: center;
+            margin-left: auto; /* Ändrat från 20px till auto för att flytta till höger */
+        }
+        .header-icon {
+            margin-left: 15px;
+            color: #5f6368;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .signin-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 20px; /* Mycket mer rundad knapp, samma som i google-prop.html */
+            padding: 9px 23px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 5px;
+            border: 1px solid transparent;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            padding: 0 0px;
+            border-bottom: 1px solid #ebebeb;
+            margin-left: 140px;
+            font-size: 14px;
+            color: #5f6368;
+            height: 48px;
+            align-items: center;
+        }
+        .nav-item {
+            padding: 0 12px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            color: #1a73e8;
+            border-bottom: 3px solid #1a73e8;
+            font-weight: bold;
+        }
+        .nav-item:hover {
+            color: #202124;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 140px;
+            max-width: 652px;
+            padding: 15px 0;
+        }
+        .result-stats {
+            color: #70757a;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .search-result {
+            margin-bottom: 30px;
+        }
+        .result-url {
+            color: #202124;
+            font-size: 14px;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+        }
+        .favicon {
+            width: 20px;
+            margin-right: 8px;
+        }
+        .url-text {
+            color: #5f6368;
+        }
+        .result-title {
+            font-size: 20px;
+            line-height: 1.3;
+            margin-bottom: 3px;
+            font-weight: normal;
+        }
+        .result-title a {
+            color: #1a0dab;
+            text-decoration: none;
+        }
+        .result-title a:hover {
+            text-decoration: underline;
+        }
+        .result-title a:visited {
+            color: #681da8;
+            text-decoration: none;
+        }
+        .result-title a:visited:hover {
+            text-decoration: underline;
+        }
+        .result-snippet {
+            color: #4d5156;
+            line-height: 1.58;
+        }
+
+        /* Images section */
+        .images-section {
+            margin: 30px 0;
+        }
+        .images-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .images-title {
+            font-size: 22px;
+            color: #202124;
+        }
+        .more-images {
+            color: #1a73e8;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .more-images:hover {
+            text-decoration: underline;
+        }
+        .images-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .image-item {
+            width: calc(33.333% - 7px);
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        .image-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Related searches */
+        .related-searches {
+            margin: 30px 0;
+        }
+        .related-title {
+            font-size: 22px;
+            color: #202124;
+            margin-bottom: 12px;
+        }
+        .related-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .related-item {
+            background: #f1f3f4;
+            border-radius: 100px;
+            padding: 8px 16px;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .related-item:hover {
+            background: #e8eaed;
+        }
+        .search-icon-small {
+            color: #9aa0a6;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f2f2f2;
+            padding: 15px 30px;
+            border-top: 1px solid #dadce0;
+            color: #70757a;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+        .footer-location {
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dadce0;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 15px 0;
+        }
+        .footer-link {
+            margin: 0 15px;
+            color: #70757a;
+            text-decoration: none;
+        }
+        .footer-link:hover {
+            color: #202124;
+            text-decoration: underline;
+        }
+        .google-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            margin-left: 140px;
+            color: #4285f4;
+        }
+        .google-pagination .g {
+            font-size: 24px;
+            margin: 0 2px;
+        }
+        .google-pagination .o {
+            font-size: 24px;
+            margin: 0 2px;
+        }
+        .pagination-numbers {
+            display: flex;
+            margin: 0 20px;
+        }
+        .page-number {
+            margin: 0 10px;
+            color: #4285f4;
+            cursor: pointer;
+        }
+        .page-number.active {
+            color: #202124;
+            font-weight: bold;
+        }
+        .more-link {
+            color: #1a73e8;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+        .more-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="index.html" class="google-logo">
+            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google">
+        </a>
+        <div class="search-box">
+            <input type="text" id="searchInput" value="Olle Bengtsson">
+            <span class="clear-icon">✕</span>
+            <img src="inputicons.png" alt="Sökikoner" style="height: 24px;">
+        </div>
+        <div class="header-icons">
+            <img src="kugghjul.png" alt="Inställningar" class="header-icon" style="height: 44px;">
+            <button class="signin-btn">Logga in</button>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-item active">Alla</div>
+        <div class="nav-item">Bilder</div>
+        <div class="nav-item">Maps</div>
+        <div class="nav-item">Videos</div>
+        <div class="nav-item">Nyheter</div>
+        <div class="nav-item">Shopping</div>
+        <div class="nav-item">Mer</div>
+        <div class="nav-item" style="margin-left: 130px;">Verktyg</div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="result-stats">Ungefär 15 700 resultat (0,42 sekunder)</div>
+
+        <!-- Search Results -->
+        <div id="searchResults">
+            <!-- Results will be loaded here -->
+        </div>
+
+        <!-- Images Section -->
+        <div class="images-section">
+            <div class="images-header">
+                <h3 class="images-title">Bilder</h3>
+                <a href="#" class="more-images">Fler bilder</a>
+            </div>
+            <div class="images-grid" id="imagesGrid">
+                <!-- Images will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Related Searches -->
+        <div class="related-searches">
+            <h3 class="related-title">Relaterade sökningar</h3>
+            <div class="related-items" id="relatedSearches">
+                <!-- Related searches will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Google Pagination -->
+        <div class="google-pagination">
+            <div style="color: #4285f4;">G</div>
+            <div style="color: #ea4335;">o</div>
+            <div style="color: #fbbc05;">o</div>
+            <div style="color: #4285f4;">o</div>
+            <div style="color: #34a853;">o</div>
+            <div style="color: #ea4335;">o</div>
+            <div style="color: #fbbc05;">o</div>
+            <div style="color: #4285f4;">o</div>
+            <div style="color: #34a853;">o</div>
+            <div style="color: #ea4335;">o</div>
+            <div style="color: #fbbc05;">o</div>
+            <div style="color: #4285f4;">g</div>
+            <div style="color: #34a853;">l</div>
+            <div style="color: #ea4335;">e</div>
+            <div class="pagination-numbers">
+                <div class="page-number active">1</div>
+                <div class="page-number">2</div>
+                <div class="page-number">3</div>
+                <div class="page-number">4</div>
+                <div class="page-number">5</div>
+                <div class="page-number">6</div>
+                <div class="page-number">7</div>
+                <div class="page-number">8</div>
+                <div class="page-number">9</div>
+                <div class="page-number">10</div>
+            </div>
+            <div class="more-link">Nästa</div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-location">Sverige</div>
+        <div class="footer-links">
+            <a href="#" class="footer-link">Hjälp</a>
+            <a href="#" class="footer-link">Skicka feedback</a>
+            <a href="#" class="footer-link">Sekretess</a>
+            <a href="#" class="footer-link">Villkor</a>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadResults);
+
+        async function loadResults() {
+            try {
+                console.log("Försöker ladda JSON-filen...");
+                // Försök ladda JSON-filen
+                const response = await fetch('search-results-olle.json');
+                console.log("Fetch response:", response);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Laddad data:", data);
+
+                // Uppdatera sökfältet
+                document.getElementById('searchInput').value = data.query;
+
+                // Visa sökresultat
+                console.log("Data structure:", data);
+                displaySearchResults(data.results);
+
+                // Visa bilder
+                if (data.images && data.images.length > 0) {
+                    displayImages(data.images);
+                }
+
+                // Visa relaterade sökningar
+                if (data.relatedSearches && data.relatedSearches.length > 0) {
+                    displayRelatedSearches(data.relatedSearches);
+                }
+
+            } catch (error) {
+                console.error("Kunde inte ladda search-results-olle.json:", error);
+                    document.getElementById('searchResults').innerHTML =
+                        `<div class="search-result">
+                            <div class="result-snippet" style="color: red;">
+                                Fel vid laddning av data: ${error.message}.
+                                Kontrollera webbläsarens konsol för mer information.
+                            </div>
+                        </div>`;
+            }
+
+            // Notify the parent window that the specific search results are loaded
+            if (window.parent && window.parent !== window) {
+                console.log("Sending message to parent: searchResultLoaded");
+                window.parent.postMessage({ type: 'searchResultLoaded', query: 'Olle Bengtsson' }, '*'); // Consider a specific target origin for security
+            }
+        }
+
+        function displaySearchResults(results) {
+            console.log("Visar sökresultat:", results);
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '';
+
+            if (!results || !Array.isArray(results)) {
+                console.error("Ogiltiga sökresultat:", results);
+                resultsContainer.innerHTML = '<div class="search-result"><div class="result-snippet" style="color: red;">Inga giltiga sökresultat hittades.</div></div>';
+                return;
+            }
+
+            results.forEach(result => {
+                const resultElement = document.createElement('div');
+                resultElement.className = 'search-result';
+
+                resultElement.innerHTML = `
+                    <div class="result-url">
+                        <span class="favicon-container" style="margin-top:3px">
+                            ${result.favicon ?
+                                `<img src="${result.favicon}" alt="" class="favicon" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                <svg style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="#5f6368" class="favicon">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>
+                                </svg>` :
+                                `<svg width="16" height="16" viewBox="0 0 24 24" fill="#5f6368" class="favicon">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>
+                                </svg>`
+                            }
+                        </span>
+                        <span class="url-text">${result.displayUrl || ''}</span>
+                    </div>
+                    <h3 class="result-title"><a href="${result.url || '#'}">${result.title || 'Ingen titel'}</a></h3>
+                    <div class="result-snippet">${result.snippet || ''}</div>
+                `;
+
+                resultsContainer.appendChild(resultElement);
+            });
+        }
+
+        function displayImages(images) {
+            const imagesGrid = document.getElementById('imagesGrid');
+            imagesGrid.innerHTML = '';
+
+            // Visa bara de första 6 bilderna
+            const displayImages = images.slice(0, 6);
+
+            displayImages.forEach(image => {
+                const imageElement = document.createElement('div');
+                imageElement.className = 'image-item';
+
+                imageElement.innerHTML = `
+                    <img src="${image.url}" alt="${image.title}">
+                    <div class="image-caption">${image.title} - ${image.source}</div>
+                `;
+
+                imagesGrid.appendChild(imageElement);
+            });
+        }
+
+        function displayRelatedSearches(searches) {
+            const relatedContainer = document.getElementById('relatedSearches');
+            relatedContainer.innerHTML = '';
+
+            searches.forEach(search => {
+                const searchElement = document.createElement('div');
+                searchElement.className = 'related-item';
+
+                searchElement.innerHTML = `
+                    <span class="search-icon-small">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#9aa0a6">
+                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                        </svg>
+                    </span>
+                    <span>${search}</span>
+                `;
+
+                relatedContainer.appendChild(searchElement);
+            });
+        }
+    </script>
+</body>
+</html>
