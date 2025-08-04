@@ -6,9 +6,15 @@ import { DateTimeSettingsPopup } from './DateTimeSettingsPopup'; // Import the p
 // Define props interface
 interface WindowsStartbarProps {
   onToggleMainWindow?: () => void; // Optional prop to toggle main window
+  isMainWindowMinimized?: boolean; // Window minimized status
+  isMainWindowClosed?: boolean; // Window closed status
 }
 
-export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({ onToggleMainWindow }) => {
+export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
+  onToggleMainWindow,
+  isMainWindowMinimized = false,
+  isMainWindowClosed = false
+}) => {
   const [dateTime, setDateTime] = useState(new Date()); // State for the current date and time
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
   const [isDateTimePopupOpen, setIsDateTimePopupOpen] = useState(false); // State for popup visibility
@@ -230,7 +236,9 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({ onToggleMainWi
 
           {/* ResCueX Icon Button */}
           <button
-            className="h-full w-12 flex items-center justify-center hover:bg-gray-800 transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-500"
+            className={`h-full w-12 flex items-center justify-center hover:bg-gray-800 transition-colors relative ${
+              !isMainWindowClosed ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-500" : ""
+            }`}
             onClick={onToggleMainWindow} // Call the passed function
             title="Google Chrome" // Update title for accessibility/tooltip
           >

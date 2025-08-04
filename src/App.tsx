@@ -15,10 +15,19 @@ const queryClient = new QueryClient();
 const App = () => {
   // State to control the main window's minimized status
   const [isMainWindowMinimized, setIsMainWindowMinimized] = useState(false);
+  // State to control if the main window is completely closed - start closed
+  const [isMainWindowClosed, setIsMainWindowClosed] = useState(true);
 
   // Function to toggle the main window's visibility
   const toggleMainWindowVisibility = () => {
-    setIsMainWindowMinimized(prev => !prev);
+    if (isMainWindowClosed) {
+      // If window is closed, reopen it
+      setIsMainWindowClosed(false);
+      setIsMainWindowMinimized(false);
+    } else {
+      // If window is open, just toggle minimize
+      setIsMainWindowMinimized(prev => !prev);
+    }
   };
 
   return (
@@ -29,13 +38,22 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             {/* Pass state and setter to Index page */}
-            <Route path="/" element={<Index isMainWindowMinimized={isMainWindowMinimized} setIsMainWindowMinimized={setIsMainWindowMinimized} />} />
+            <Route path="/" element={<Index
+              isMainWindowMinimized={isMainWindowMinimized}
+              setIsMainWindowMinimized={setIsMainWindowMinimized}
+              isMainWindowClosed={isMainWindowClosed}
+              setIsMainWindowClosed={setIsMainWindowClosed}
+            />} />
             <Route path="/incident" element={<Incidentrapportering />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          {/* Pass toggle function to Startbar */}
-          <WindowsStartbar onToggleMainWindow={toggleMainWindowVisibility} />
+          {/* Pass toggle function and window status to Startbar */}
+          <WindowsStartbar
+            onToggleMainWindow={toggleMainWindowVisibility}
+            isMainWindowMinimized={isMainWindowMinimized}
+            isMainWindowClosed={isMainWindowClosed}
+          />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

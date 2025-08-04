@@ -8,6 +8,7 @@ interface WindowTitleBarProps {
   onMaximize?: () => void;
   isMainWindow?: boolean;
   isFullscreen?: boolean;
+  onMouseDown?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
@@ -17,24 +18,22 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   onMinimize,
   onMaximize,
   isMainWindow = false,
-  isFullscreen = false
+  isFullscreen = false,
+  onMouseDown
 }) => {
   const handleMaximizeClick = () => {
-    // Attempt to enter fullscreen
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-      });
-    } else {
-      console.warn("Fullscreen API is not supported by this browser.");
+    // Use the onMaximize prop instead of browser fullscreen
+    if (onMaximize) {
+      onMaximize();
     }
   };
 
   if (isMainWindow) {
     return (
-      <div 
-        className="rounded-t-lg overflow-hidden shadow-md flex items-center justify-between h-10 px-2 bg-[#DEE1E6] border-b border-[#DEE1E6]"
+      <div
+        className={`overflow-hidden shadow-md flex items-center justify-between h-10 px-2 bg-[#DEE1E6] border-b border-[#DEE1E6] ${!isFullscreen ? 'cursor-move' : ''}`}
         style={{ marginBottom: '-3px' }} // Added negative margin-bottom
+        onMouseDown={onMouseDown}
       >
         <div className="flex items-center">
           <span className="text-white text-sm font-normal">
@@ -42,7 +41,7 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
 
   <img src="../../left.png" alt="Left S" className="bg-white h-9 pr-1"  object-contain/>
 
-<img src="../../public/googlefake/favicon.webp" className="bg-white w-4 pt-2 pb-3"></img>
+<img src="/googlefake/favicon.webp" className="bg-white w-4 pt-2 pb-3"></img>
   <button className="bg-white h-9 pl-2 pb-1.5 pr-6 text-xs rounded-none text-gray-600">
     {title}
   </button>
@@ -65,14 +64,22 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
               <rect x="0" y="0" width="10.2" height="1"></rect>
             </svg>
           </button>
-          <button 
-            className="w-[46px] h-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors" 
+          <button
+            className="w-[46px] h-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors"
             onClick={handleMaximizeClick}
-            aria-label="Maximize"
+            aria-label={isFullscreen ? "Restore" : "Maximize"}
           >
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="black">
-              <path d="M0,0v10h10V0H0z M9,9H1V1h8V9z"></path>
-            </svg>
+            {isFullscreen ? (
+              // Restore icon (two overlapping squares)
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="black">
+                <path d="M2,0v2h6v6h2V0H2z M0,2v8h8V2H0z M7,3v5H1V3H7z"></path>
+              </svg>
+            ) : (
+              // Maximize icon (single square)
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="black">
+                <path d="M0,0v10h10V0H0z M9,9H1V1h8V9z"></path>
+              </svg>
+            )}
           </button>
           <button 
             className="w-[46px] h-8 flex items-center justify-center hover:bg-red-600 active:bg-red-400 transition-colors" 

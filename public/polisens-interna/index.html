@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polismyndigheten | DurTvå</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #EFEFEF;
+            color: #333;
+            font-size: 15px;
+        }
+        .breadcrumbs {
+            background-color: #d1d5db;
+            color: #6b7280;
+            font-size: 13px;
+            padding: 8px 0;
+        }
+        .section-header {
+            border: 1px solid #c5c8cc;
+            font-family: 'Arial Narrow', sans-serif;
+
+        }
+        .content-area {
+            background-color: #ffffff;
+            border: 1px solid #c5c8cc;
+        }
+        .table-header {
+            background-color: #e1e3e6;
+        }
+        .table-header th {
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .table-header th:hover {
+            background-color: #d1d3d6;
+        }
+        .table-highlight {
+            background-color: #fffbe4;
+            font-weight: 600;
+        }
+        .table-row td {
+            padding: 1px 8px;
+            cursor: pointer;
+        }
+        .table-row:hover {
+            background-color: #f0f9ff;
+        }
+        input[type="text"], input[type="date"] {
+            border: 1px solid #c5c8cc;
+            padding: 4px 8px;
+        }
+        label {
+            margin-bottom: 4px;
+            display: block;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        h4 {
+            font-weight:10;
+        }
+        button {
+            background-color: #C5C5C7 !important;
+            border: 1px solid #757575 !important;
+            color: black !important;
+            border-radius: 4px !important;
+        }
+        button:hover {
+            background-color: #B0B0B2 !important;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .cross-reference-btn {
+            padding: 12px 24px;
+            font-weight: bold;
+            margin-top: 16px;
+            width: 100%;
+        }
+        .profile-image {
+            width: 200px;
+            height: 250px;
+            background-color: #e5e7eb;
+            border: 2px solid #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header Image - Full Width -->
+    <div class="w-full overflow-hidden">
+        <img src="header.png" alt="Header Bild" class="block" style="width: auto; height: auto; min-width: 100%;">
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs w-full" style="margin-top:10px">
+        <div class="max-w-screen-2xl mx-auto px-4">
+            /DurTvå/PMStockholm/Ärenden/
+        </div>
+    </div>
+
+    <!-- Search View -->
+    <div id="search-view" class="w-full max-w-screen-2xl mx-auto p-4">
+        <div class="flex flex-col md:flex-row gap-4">
+            <!-- Left Sidebar: Database Search -->
+            <aside class="w-full md:w-1/4 lg:w-1/5">
+                <div class="section-header p-2 font-bold bg-gray-600 text-white">
+                    <h3><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>Databasökning</h3>
+                </div>
+                <div class="content-area p-4">
+                    <form id="search-form">
+                        <!-- Personal/profil -->
+                        <fieldset class="mb-4">
+                            <legend class="font-semibold mb-2">Personal/profil</legend>
+                            <label for="namn">Namn:</label>
+                            <input type="text" id="namn" name="namn" class="w-full mb-2">
+                            <label>Kön:</label>
+                            <div class="flex gap-4 mb-2">
+                                <div><input type="radio" id="kon_alla" name="kon" value="" checked> <label for="kon_alla" class="inline">Alla</label></div>
+                                <div><input type="radio" id="man" name="kon" value="Man"> <label for="man" class="inline">Man</label></div>
+                                <div><input type="radio" id="kvinna" name="kon" value="Kvinna"> <label for="kvinna" class="inline">Kvinna</label></div>
+                            </div>
+                            <label>Ålder:</label>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="alder_fran" name="alder_fran" class="w-1/2" placeholder="Från">
+                                <span>Till</span>
+                                <input type="text" id="alder_till" name="alder_till" class="w-1/2" placeholder="Till">
+                            </div>
+                        </fieldset>
+
+                        <!-- Tidsperiod -->
+                        <fieldset class="mb-4">
+                            <legend class="font-semibold mb-2">Tidsperiod</legend>
+                            <div><input type="radio" id="alla_ar" name="tidsperiod" value="" checked> <label for="alla_ar" class="inline">Alla år</label></div>
+                            <div><input type="radio" id="senaste_5" name="tidsperiod" value="5"> <label for="senaste_5" class="inline">Senaste 5 åren</label></div>
+                            <div><input type="radio" id="senaste_10" name="tidsperiod" value="10"> <label for="senaste_10" class="inline">Senaste 10 åren</label></div>
+                            <div><input type="radio" id="senaste_15" name="tidsperiod" value="15"> <label for="senaste_15" class="inline">Senaste 15 åren</label></div>
+                        </fieldset>
+
+                        <button type="button" id="advanced-date-btn" class="w-full bg-gray-500 text-white p-2 mb-4 font-bold hover:bg-gray-600 transition-colors">
+                            Avancerat datumfilter...
+                        </button>
+
+                        <button type="submit" class="w-full bg-blue-600 text-white p-2 mb-6 font-bold hover:bg-blue-700 transition-colors">SÖK</button>
+
+                        <!-- Etnisk bakgrund -->
+                        <fieldset class="mb-4">
+                            <legend class="font-semibold mb-2">Etnisk bakgrund</legend>
+                            <div><input type="checkbox" id="svensk"> <label for="svensk" class="inline">Svensk bakgrund</label></div>
+                            <div><input type="checkbox" id="utlandsk"> <label for="utlandsk" class="inline">Utländsk bakgrund</label></div>
+                            <div><input type="checkbox" id="okand_etnisk"> <label for="okand_etnisk" class="inline">Okänd</label></div>
+                        </fieldset>
+
+                        <!-- Våld i tjänsten -->
+                        <fieldset class="mb-4">
+                            <legend class="font-semibold mb-2">Våld i tjänsten</legend>
+                            <div><input type="checkbox" id="vald_ja"> <label for="vald_ja" class="inline">Anklagad för våld</label></div>
+                        </fieldset>
+
+                        <!-- Anställningsform -->
+                        <fieldset class="mb-4">
+                            <legend class="font-semibold mb-2">Anställningsform</legend>
+                            <div><input type="checkbox" id="tillsvidare"> <label for="tillsvidare" class="inline">Tillsvidare</label></div>
+                            <div><input type="checkbox" id="provanstallning"> <label for="provanstallning" class="inline">Provanställning</label></div>
+                        </fieldset>
+                        
+                        <!-- Tjänst -->
+                        <fieldset class="mb-4">
+                            <legend class="font-semibold mb-2">Tjänst</legend>
+                            <div><input type="checkbox" id="yttre_befal"> <label for="yttre_befal" class="inline">Yttre befäl</label></div>
+                            <div><input type="checkbox" id="utredning_tjanst"> <label for="utredning_tjanst" class="inline">Utredning</label></div>
+                            <div><input type="checkbox" id="insatsstyrka"> <label for="insatsstyrka" class="inline">Insatsstyrka</label></div>
+                        </fieldset>
+
+                         <!-- Uniformerad personal -->
+                        <fieldset class="mb-4">
+                            <legend class="font-semibold mb-2">Uniformerad personal</legend>
+                             <div><input type="radio" id="unif_ja" name="uniformerad"> <label for="unif_ja" class="inline">Ja</label></div>
+                             <div><input type="radio" id="unif_nej" name="uniformerad"> <label for="unif_nej" class="inline">Nej</label></div>
+                        </fieldset>
+                        
+                        <!-- Fällande dom -->
+                        <fieldset>
+                            <legend class="font-semibold mb-2">Fällande dom</legend>
+                             <div><input type="radio" id="dom_ja" name="dom"> <label for="dom_ja" class="inline">Ja</label></div>
+                             <div><input type="radio" id="dom_nej" name="dom"> <label for="dom_nej" class="inline">Nej</label></div>
+                        </fieldset>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- Right Side: Search Results -->
+            <main class="w-full md:w-3/4 lg:w-4/5">
+                <div class="section-header p-2 font-bold flex justify-between items-center bg-gray-600 text-white">
+                    <h4><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z" /><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>Sökresultat</h4>
+                    <span id="result-count" class="text-sm font-normal bg-gray-500 text-white px-2 py-0.5"></span>
+                </div>
+                <div class="content-area overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="table-header">
+                            <tr>
+                                <th class="p-2" data-sort="efternamn">Efternamn</th>
+                                <th class="p-2" data-sort="fornamn">Förnamn</th>
+                                <th class="p-2">Personnummer</th>
+                                <th class="p-2">Polis-ID</th>
+                                <th class="p-2">Kodnr Våldsfall</th>
+                                <th class="p-2" data-sort="artal">Årtal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-table-body">
+                            <!-- Rows will be dynamically inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Cross Reference Button (hidden by default) -->
+                <button id="cross-reference-btn" class="cross-reference-btn hidden" onclick="crossReferenceWithDutyList()">
+                    Korskör med tjänstgöringslista (Mordnätter)
+                </button>
+            </main>
+        </div>
+    </div>
+
+    <!-- Personnel File View (hidden by default) -->
+    <div id="personnel-view" class="w-full max-w-screen-2xl mx-auto p-4 hidden">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Profile Image -->
+            <div class="w-full md:w-1/3">
+                <div class="profile-image mx-auto">
+                    Profilbild saknas
+                </div>
+            </div>
+            
+            <!-- Personnel Information -->
+            <div class="w-full md:w-2/3">
+                <div class="section-header p-2 font-bold bg-gray-600 text-white mb-4">
+                    <h3>Personalakt</h3>
+                </div>
+                <div class="content-area p-6">
+                    <div id="personnel-details" class="space-y-4">
+                        <!-- Details will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="flex gap-4 mt-6">
+                        <button onclick="exportPersonnelFile()" class="bg-green-600 text-white px-6 py-2 font-bold hover:bg-green-700 transition-colors">
+                            Exportera
+                        </button>
+                        <button onclick="backToSearchResults()" class="bg-gray-600 text-white px-6 py-2 font-bold hover:bg-gray-700 transition-colors">
+                            Tillbaka till sökresultat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Filter View (hidden by default) -->
+    <div id="date-filter-view" class="w-full max-w-screen-2xl mx-auto p-4 hidden">
+        <div class="section-header p-2 font-bold bg-gray-600 text-white mb-4">
+            <h3>Avancerat datumfilter</h3>
+        </div>
+
+        <div class="content-area p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Date Selection -->
+                <div>
+                    <h4 class="font-semibold mb-3">Välj datum</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="font-semibold mb-2">År:</label>
+                            <select id="year-select" class="w-full border border-gray-300 p-2">
+                                <option value="">Välj år</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="font-semibold mb-2">Månad:</label>
+                            <select id="month-select" class="w-full border border-gray-300 p-2">
+                                <option value="">Välj månad</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="font-semibold mb-2">Dag:</label>
+                            <select id="day-select" class="w-full border border-gray-300 p-2">
+                                <option value="">Välj dag</option>
+                            </select>
+                        </div>
+                        <button id="add-date-btn" class="w-full bg-gray-500 text-white p-2 font-bold hover:bg-gray-600 transition-colors">
+                            Lägg till datum
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Date Lists -->
+                <div>
+                    <h4 class="font-semibold mb-3">Valda datum</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="font-semibold mb-2">Valda datum för filtrering:</label>
+                            <select id="selected-dates" multiple class="w-full border border-gray-300 p-2" style="height: 200px;">
+                            </select>
+                        </div>
+                        <div>
+                            <button id="remove-selected" class="w-full bg-gray-500 text-white p-2 font-bold hover:bg-gray-600 transition-colors">
+                                Ta bort markerade datum
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 mt-6">
+                <button id="apply-date-filter" class="bg-gray-600 text-white px-6 py-2 font-bold hover:bg-gray-700 transition-colors">
+                    Tillämpa filter
+                </button>
+                <button id="back-to-search" class="bg-gray-500 text-white px-6 py-2 font-bold hover:bg-gray-600 transition-colors">
+                    Tillbaka till sökning
+                </button>
+            </div>
+        </div>
+    </div>
+
+<script src="databas.js"></script>
+
+<script>
+    
+    // --- EXPANDED MOCK DATABASE ---
+    // allUsers is loaded from databas.js
+
+    // Wait for allUsers to be loaded
+    if (typeof allUsers === 'undefined') {
+        console.error('allUsers is not loaded from databas.js');
+        window.allUsers = []; // Fallback to empty array
+    }
+
+    let currentSort = { key: 'efternamn', asc: true };
+    let displayedUsers = [...allUsers];
+    let savedSearchResults = [];
+    let selectedDutyDates = [];
+
+    // --- DOM ELEMENTS ---
+    const tableBody = document.getElementById('results-table-body');
+    const resultCount = document.getElementById('result-count');
+    const searchForm = document.getElementById('search-form');
+    const nameInput = document.getElementById('namn');
+    const ageFromInput = document.getElementById('alder_fran');
+    const ageToInput = document.getElementById('alder_till');
+    const searchView = document.getElementById('search-view');
+    const personnelView = document.getElementById('personnel-view');
+    const dateFilterView = document.getElementById('date-filter-view');
+
+    // Date filter functionality
+    const advancedDateBtn = document.getElementById('advanced-date-btn');
+    const backToSearchBtn = document.getElementById('back-to-search');
+    const addDateBtn = document.getElementById('add-date-btn');
+    const applyFilterBtn = document.getElementById('apply-date-filter');
+    const removeSelectedBtn = document.getElementById('remove-selected');
+
+    // Initialize date dropdowns
+    function initializeDateDropdowns() {
+        const yearSelect = document.getElementById('year-select');
+        const monthSelect = document.getElementById('month-select');
+        const daySelect = document.getElementById('day-select');
+
+        // Populate years (2015-2025)
+        for (let year = 2015; year <= 2025; year++) {
+            yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+        }
+
+        // Populate months
+        const months = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 
+                       'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
+        months.forEach((month, index) => {
+            monthSelect.innerHTML += `<option value="${(index + 1).toString().padStart(2, '0')}">${month}</option>`;
+        });
+
+        // Populate days
+        for (let day = 1; day <= 31; day++) {
+            daySelect.innerHTML += `<option value="${day.toString().padStart(2, '0')}">${day}</option>`;
+        }
+    }
+
+    advancedDateBtn.addEventListener('click', () => {
+        searchView.classList.add('hidden');
+        dateFilterView.classList.remove('hidden');
+        initializeDateDropdowns();
+    });
+
+    backToSearchBtn.addEventListener('click', () => {
+        dateFilterView.classList.add('hidden');
+        searchView.classList.remove('hidden');
+    });
+
+    addDateBtn.addEventListener('click', () => {
+        const year = document.getElementById('year-select').value;
+        const month = document.getElementById('month-select').value;
+        const day = document.getElementById('day-select').value;
+
+        if (year && month && day) {
+            const dateString = `${year}-${month}-${day}`;
+            const displayString = `${day}/${month}/${year}`;
+
+            // Add directly to selected dates instead of available dates
+            const selected = document.getElementById('selected-dates');
+
+            // Check if date already exists in selected dates
+            let dateExists = false;
+            for (let i = 0; i < selected.options.length; i++) {
+                if (selected.options[i].value === dateString) {
+                    dateExists = true;
+                    break;
+                }
+            }
+
+            if (!dateExists) {
+                const option = new Option(displayString, dateString);
+                selected.add(option);
+            }
+
+            // Don't reset dropdowns - keep them for easier multiple date entry
+        }
+    });
+
+    removeSelectedBtn.addEventListener('click', () => {
+        const selected = document.getElementById('selected-dates');
+
+        // Remove selected options from the list
+        Array.from(selected.selectedOptions).forEach(option => {
+            selected.removeChild(option);
+        });
+    });
+
+    applyFilterBtn.addEventListener('click', () => {
+        const selected = document.getElementById('selected-dates');
+        selectedDutyDates = Array.from(selected.options).map(option => option.value);
+        dateFilterView.classList.add('hidden');
+        searchView.classList.remove('hidden');
+        filterUsers(); // Trigger search with new date filter
+    });
+
+    // --- FUNCTIONS ---
+
+    function renderTableAnimated(users) {
+        tableBody.innerHTML = '';
+
+        if (users.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">Inga resultat hittades.</td></tr>';
+            resultCount.textContent = 'Visar 0 Resultat';
+            return;
+        }
+
+        resultCount.textContent = `Hittade ${users.length} resultat...`;
+
+        users.forEach((user, index) => {
+            setTimeout(() => {
+                const row = document.createElement('tr');
+                let rowClass = 'border-gray-200 table-row';
+                if (index % 2 !== 0) { rowClass += ' bg-blue-50'; }
+                if (user.highlight) { rowClass += ' table-highlight'; }
+                row.className = rowClass;
+
+                row.innerHTML = `
+                    <td class="p-2">${user.efternamn}</td>
+                    <td class="p-2">${user.fornamn}</td>
+                    <td class="p-2">${user.personnummer}</td>
+                    <td class="p-2">${user.polisId}</td>
+                    <td class="p-2">${user.kodnr}</td>
+                    <td class="p-2">${user.artal}</td>
+                `;
+                
+                row.addEventListener('click', () => showPersonnelFile(user));
+                tableBody.appendChild(row);
+
+                if (index === users.length - 1) {
+                    resultCount.textContent = `Visar ${users.length} Resultat`;
+                }
+            }, index * 50);
+        });
+    }
+
+    function filterUsers() {
+        const nameFilter = nameInput.value.toLowerCase();
+        const genderFilter = document.querySelector('input[name="kon"]:checked').value;
+        const ageFrom = parseInt(ageFromInput.value) || 0;
+        const ageTo = parseInt(ageToInput.value) || 999;
+        const tidsperiodFilter = document.querySelector('input[name="tidsperiod"]:checked').value;
+        
+        const svenskChecked = document.getElementById('svensk').checked;
+        const utlandskChecked = document.getElementById('utlandsk').checked;
+        const okandEtniskChecked = document.getElementById('okand_etnisk').checked;
+        const valdChecked = document.getElementById('vald_ja').checked;
+
+        displayedUsers = allUsers.filter(user => {
+            const fullName = `${user.fornamn} ${user.efternamn}`.toLowerCase();
+            const birthYear = parseInt(user.personnummer.substring(0, 2));
+            const currentYear = new Date().getFullYear().toString().substring(2);
+            let age = (birthYear > currentYear) ? 100 - birthYear + parseInt(currentYear) : parseInt(currentYear) - birthYear;
+
+            const nameMatch = nameFilter ? fullName.includes(nameFilter) : true;
+            const genderMatch = genderFilter ? user.kon === genderFilter : true;
+            const ageMatch = age >= ageFrom && age <= ageTo;
+            
+            // Time period filter
+            let timeMatch = true;
+            if (tidsperiodFilter) {
+                const currentYear = new Date().getFullYear();
+                const yearsBack = parseInt(tidsperiodFilter);
+                timeMatch = user.artal >= (currentYear - yearsBack);
+            }
+            
+            // Ethnic background filter
+            let ethnicMatch = true;
+            if (svenskChecked || utlandskChecked || okandEtniskChecked) {
+                ethnicMatch = (svenskChecked && user.etniskBakgrund === "Svensk") ||
+                             (utlandskChecked && user.etniskBakgrund === "Utländsk") ||
+                             (okandEtniskChecked && user.etniskBakgrund === "Okänd");
+            }
+            
+            // Violence filter
+            const violenceMatch = valdChecked ? user.anklagadVald === true : true;
+            
+            // Duty date filter
+            let dutyMatch = true;
+            if (selectedDutyDates.length > 0 && user.tjanstgoringsperioder) {
+                dutyMatch = selectedDutyDates.every(date => user.tjanstgoringsperioder.includes(date));
+            }
+
+            return nameMatch && genderMatch && ageMatch && timeMatch && ethnicMatch && violenceMatch && dutyMatch;
+        });
+        
+        savedSearchResults = [...displayedUsers];
+        sortUsers(currentSort.key, currentSort.asc, false);
+    }
+
+    function sortUsers(key, asc = true, toggle = true) {
+        if (toggle && currentSort.key === key) {
+            currentSort.asc = !currentSort.asc;
+        } else {
+            currentSort.key = key;
+            currentSort.asc = asc;
+        }
+
+        displayedUsers.sort((a, b) => {
+            const valA = a[key];
+            const valB = b[key];
+            let comparison = 0;
+            if (valA > valB) { comparison = 1; } 
+            else if (valA < valB) { comparison = -1; }
+            return asc ? comparison : comparison * -1;
+        });
+
+        renderTableAnimated(displayedUsers);
+    }
+
+    function crossReferenceWithDutyList() {
+        // Filter current results to only show those on duty during murder nights
+        displayedUsers = displayedUsers.filter(user => user.iTjanstMordnatter === true);
+        renderTableAnimated(displayedUsers);
+    }
+
+    function showPersonnelFile(user) {
+        // Hide search view and date filter view, show personnel view
+        searchView.classList.add('hidden');
+        dateFilterView.classList.add('hidden');
+        personnelView.classList.remove('hidden');
+
+        // Update profile image
+        const profileImageDiv = document.querySelector('.profile-image');
+        if (user.id === "P001") { // Anders Palm
+            profileImageDiv.innerHTML = `<img src="palm-profil.png" alt="Anders Palm" style="width: 100%; height: 100%; object-fit: cover;">`;
+        } else {
+            profileImageDiv.innerHTML = 'Profilbild saknas';
+        }
+
+        // Populate personnel details
+        const detailsDiv = document.getElementById('personnel-details');
+        let detailsHTML = `
+            <div class="space-y-6">
+                <!-- Grundläggande personuppgifter -->
+                <div>
+                    <h4 class="font-bold text-lg mb-3 border-b border-gray-300 pb-1">Personuppgifter</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><strong>Efternamn:</strong> ${user.efternamn}</div>
+                        <div><strong>Förnamn:</strong> ${user.fornamn}</div>
+                        <div><strong>Personnummer:</strong> ${user.personnummer}</div>
+                        <div><strong>Kön:</strong> ${user.kon}</div>
+                        <div><strong>Polis-ID:</strong> ${user.polisId}</div>
+                        <div><strong>Titel:</strong> ${user.titel || 'Ej angivet'}</div>`;
+
+        if (user.adress) {
+            detailsHTML += `<div class="col-span-2"><strong>Adress:</strong> ${user.adress}</div>`;
+        }
+        if (user.langd) {
+            detailsHTML += `<div><strong>Längd:</strong> ${user.langd}</div>`;
+        }
+        if (user.synskarpa) {
+            detailsHTML += `<div><strong>Synskärpa:</strong> ${user.synskarpa}</div>`;
+        }
+        if (user.korkort) {
+            detailsHTML += `<div><strong>Körkortsuppgifter:</strong> ${user.korkort}</div>`;
+        }
+
+        detailsHTML += `
+                    </div>
+                </div>
+
+                <!-- Anställning -->
+                <div>
+                    <h4 class="font-bold text-lg mb-3 border-b border-gray-300 pb-1">Anställning</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><strong>Anställningsdatum:</strong> ${user.anstallningsdatum}</div>
+                        <div><strong>Etnisk bakgrund:</strong> ${user.etniskBakgrund}</div>
+                        <div><strong>Anklagad för våld:</strong> ${user.anklagadVald ? 'Ja' : 'Nej'}</div>
+                        <div><strong>Kodnr Våldsfall:</strong> ${user.kodnr}</div>
+                        <div><strong>Årtal:</strong> ${user.artal}</div>`;
+
+        if (user.aktiviteter) {
+            detailsHTML += `<div class="col-span-2"><strong>Aktiviteter:</strong> ${user.aktiviteter}</div>`;
+        }
+
+        detailsHTML += `
+                    </div>
+                </div>`;
+
+        // Utbildning
+        if (user.utbildning) {
+            detailsHTML += `
+                <div>
+                    <h4 class="font-bold text-lg mb-3 border-b border-gray-300 pb-1">Utbildning</h4>
+                    <div class="text-sm leading-relaxed">${user.utbildning}</div>
+                </div>`;
+        }
+
+        // Karriär
+        if (user.karrier) {
+            detailsHTML += `
+                <div>
+                    <h4 class="font-bold text-lg mb-3 border-b border-gray-300 pb-1">Karriär och anställningshistorik</h4>
+                    <div class="text-sm leading-relaxed">${user.karrier}</div>
+                </div>`;
+        }
+
+        // Anmärkningar
+        if (user.anmarkningar) {
+            detailsHTML += `
+                <div>
+                    <h4 class="font-bold text-lg mb-3 border-b border-gray-300 pb-1">Anmärkningar</h4>
+                    <div class="text-sm leading-relaxed">${user.anmarkningar}</div>
+                </div>`;
+        }
+
+        detailsHTML += `</div>`;
+        detailsDiv.innerHTML = detailsHTML;
+    }
+
+    function exportPersonnelFile() {
+        alert('Personalakt exporteras...');
+    }
+
+    function backToSearchResults() {
+        // Hide personnel view and date filter view, show search view
+        personnelView.classList.add('hidden');
+        dateFilterView.classList.add('hidden');
+        searchView.classList.remove('hidden');
+
+        // Restore previous search results
+        displayedUsers = [...savedSearchResults];
+        renderTableAnimated(displayedUsers);
+    }
+
+    // --- EVENT LISTENERS ---
+
+    searchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const searchButton = searchForm.querySelector('button[type="submit"]');
+
+        searchButton.disabled = true;
+        searchButton.textContent = 'SÖKER...';
+        tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">Söker...</td></tr>';
+        resultCount.textContent = '';
+
+        setTimeout(() => {
+            filterUsers();
+            searchButton.disabled = false;
+            searchButton.textContent = 'SÖK';
+        }, 500);
+    });
+
+    document.querySelectorAll('.table-header th[data-sort]').forEach(th => {
+        th.addEventListener('click', () => {
+            const sortKey = th.getAttribute('data-sort');
+            sortUsers(sortKey);
+        });
+    });
+
+    // --- INITIALIZATION FUNCTION ---
+    function initializeSystem() {
+        // Ensure allUsers is available
+        if (typeof window.allUsers !== 'undefined' && window.allUsers.length > 0) {
+            displayedUsers = [...window.allUsers];
+            sortUsers('efternamn', true, false);
+            console.log(`Loaded ${window.allUsers.length} users from database`);
+        } else {
+            console.error('Failed to load users from database');
+            setTimeout(initializeSystem, 100); // Retry after 100ms
+        }
+    }
+
+    // --- INITIAL RENDER ---
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeSystem);
+    } else {
+        initializeSystem();
+    }
+</script>
+
+</body>
+</html>
+

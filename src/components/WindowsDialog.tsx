@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { X, Minus, Square, RotateCcw, ArrowLeft, ArrowRight, Home, Lock, Star, UserCircle2, MoreVertical } from "lucide-react"; // Added Star, UserCircle2, MoreVertical
+import { RotateCcw, ArrowLeft, ArrowRight, Home, Lock, Star, UserCircle2, MoreVertical } from "lucide-react"; // Added Star, UserCircle2, MoreVertical
 import { cn } from "@/lib/utils";
 import WindowTitleBar from "./WindowTitleBar";
 
@@ -8,27 +8,163 @@ import WindowTitleBar from "./WindowTitleBar";
 interface WindowsDialogProps {
   isMinimized: boolean;
   setIsMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+  isClosed: boolean;
+  setIsClosed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const WindowsDialog: React.FC<WindowsDialogProps> = ({ isMinimized, setIsMinimized }) => {
+export const WindowsDialog: React.FC<WindowsDialogProps> = ({
+  isMinimized,
+  setIsMinimized,
+  isClosed,
+  setIsClosed
+}) => {
   const [isMaximized, setIsMaximized] = useState(true); // Start maximized
-  const [currentUrl, setCurrentUrl] = useState("/googlefake/index.html"); // Default to googlefake index
-  const [displayUrl, setDisplayUrl] = useState("https://www.google.com"); // Initial display URL
-  const [title, setTitle] = useState("Google"); // Initial title
+  const [currentUrl, setCurrentUrl] = useState("/polisens-interna/index.html"); // Default to polisens-interna index
+  const [displayUrl, setDisplayUrl] = useState("https://192.168.1.245"); // Initial display URL
+  const [title, setTitle] = useState("Polismyndigheten | DurTvå"); // Initial title
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Windowed mode state
+  const [position, setPosition] = useState({ x: 0, y: 0 }); // Will be calculated on first render
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 }); // Will be calculated on first render
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const windowRef = useRef<HTMLDivElement>(null);
+
+  // Calculate default windowed size and position
+  const calculateWindowedDimensions = () => {
+    const taskbarHeight = 48; // Height of taskbar (h-12 = 48px)
+    const availableWidth = window.innerWidth;
+    const availableHeight = window.innerHeight - taskbarHeight;
+
+    // 80% of available space as requested
+    const width = Math.floor(availableWidth * 0.8);
+    const height = Math.floor(availableHeight * 0.8);
+
+    // Center the window
+    const x = Math.floor((availableWidth - width) / 2);
+    const y = Math.floor((availableHeight - height) / 2);
+
+    return { x, y, width, height };
+  };
+
+  // Initialize windowed dimensions on first render
+  useEffect(() => {
+    if (windowSize.width === 0 && windowSize.height === 0) {
+      const dimensions = calculateWindowedDimensions();
+      setPosition({ x: dimensions.x, y: dimensions.y });
+      setWindowSize({ width: dimensions.width, height: dimensions.height });
+    }
+  }, [windowSize.width, windowSize.height]);
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized);
   };
 
   const handleClose = () => {
-    // Minimize the main window instead of closing
-    setIsMinimized(true);
+    // Actually close the window (not just minimize)
+    setIsClosed(true);
+    setIsMinimized(false); // Reset minimize state when closing
   };
 
   const handleMinimize = () => {
     setIsMinimized(true);
   };
+
+  // Dragging functionality
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only allow dragging in windowed mode and on the titlebar
+    if (isMaximized || !e.target || !(e.target instanceof Element)) return;
+
+    // Prevent dragging when clicking buttons or other interactive elements
+    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('svg')) {
+      return;
+    }
+
+    setIsDragging(true);
+    const windowRect = windowRef.current?.getBoundingClientRect();
+
+    if (windowRect) {
+      setDragOffset({
+        x: e.clientX - windowRect.left,
+        y: e.clientY - windowRect.top
+      });
+    }
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging || isMaximized) return;
+
+    const taskbarHeight = 48;
+    const availableWidth = window.innerWidth;
+    const availableHeight = window.innerHeight - taskbarHeight;
+    const windowRect = windowRef.current?.getBoundingClientRect();
+
+    if (windowRect) {
+      // Calculate new position
+      let newX = e.clientX - dragOffset.x;
+      let newY = e.clientY - dragOffset.y;
+
+      // Constrain to viewport boundaries
+      const maxX = availableWidth - windowRect.width;
+      const maxY = availableHeight - windowRect.height;
+
+      newX = Math.max(0, Math.min(newX, maxX));
+      newY = Math.max(0, Math.min(newY, maxY));
+
+      setPosition({ x: newX, y: newY });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Set up event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    } else {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
+
+  // Handle window resize to keep window within bounds
+  useEffect(() => {
+    const handleWindowResize = () => {
+      if (!isMaximized && windowRef.current) {
+        const taskbarHeight = 48;
+        const availableWidth = window.innerWidth;
+        const availableHeight = window.innerHeight - taskbarHeight;
+        const windowRect = windowRef.current.getBoundingClientRect();
+
+        // Ensure window doesn't go off-screen
+        let newX = position.x;
+        let newY = position.y;
+
+        if (position.x + windowRect.width > availableWidth) {
+          newX = Math.max(0, availableWidth - windowRect.width);
+        }
+        if (position.y + windowRect.height > availableHeight) {
+          newY = Math.max(0, availableHeight - windowRect.height);
+        }
+
+        if (newX !== position.x || newY !== position.y) {
+          setPosition({ x: newX, y: newY });
+        }
+      }
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+    return () => window.removeEventListener('resize', handleWindowResize);
+  }, [position, isMaximized]);
 
   // Update title and potentially reset URL when iframe loads a new page
   const handleIframeLoad = () => {
@@ -46,47 +182,38 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({ isMinimized, setIs
           setTitle("Google Chrome"); // Fallback title
         }
 
-        // Reset URL to base google.com if the loaded page is the initial index.html
-        // The specific search URL will be set via postMessage listener
+        // Reset URL to base polisen.se if the loaded page is the initial index.html
         try {
             const iframePathname = iframe.contentWindow?.location.pathname;
             if (iframePathname && iframePathname.endsWith('/index.html')) {
-                setDisplayUrl("https://www.google.com");
-                setTitle("Google - Google Chrome");
+                setDisplayUrl("https://192.168.1.245");
+                setTitle("Polismyndigheten | DurTvå");
             } else if (iframeTitle) {
                  // Keep the title update for other pages if needed
-                 setTitle(`${iframeTitle} - Google Chrome`);
+                 setTitle(`${iframeTitle}`);
             }
         } catch(e) {
              console.warn("Could not access iframe pathname:", e);
              // Fallback if access fails
-             setDisplayUrl("https://www.google.com");
-             setTitle("Google - Google Chrome");
+             setDisplayUrl("https://192.168.1.245");
+             setTitle("Polismyndigheten | DurTvå");
         }
 
       }, 100); // Small delay might help
     } catch (error) {
       console.warn("Could not access iframe content:", error);
        // Fallback if access fails
-       setTitle("Google - Google Chrome");
-       setDisplayUrl("https://www.google.com"); // Reset URL on error
+       setTitle("Polismyndigheten | DurTvå");
+       setDisplayUrl("https://192.168.1.245"); // Reset URL on error
     }
   };
 
-  // Effect to handle messages from the iframe
+  // Effect to handle messages from the iframe (if needed for polisens-interna)
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // Basic security check: Ensure the message is from the iframe source we expect
-      // In a real app, replace '*' with the actual origin of your iframe content
-      // For local files, origin check might be tricky/null, so we rely on message structure.
-      // if (event.origin !== 'expected-origin') return;
-
-      if (event.data && event.data.type === 'searchResultLoaded' && event.data.query === 'Olle Bengtsson') {
-        console.log("Received searchResultLoaded message from iframe");
-        const specificSearchUrl = "https://www.google.se/search?q=Olle+Bengtsson&sca_esv=f6861048bb8aaca5&sxsrf=AHTn8zqO4e_sXmJTVfgKAokoGyvW_LveqA%3A1745943300525&source=hp&ei=BPsQaI7tHd-M7NYPipCfoAc&iflsig=ACkRmUkAAAAAaBEJFIkvCNOUyzR65l2C7na0RX8R_xk2&ved=0ahUKEwiO_-TR0f2MAxVfBtsEHQrIB3QQ4dUDCBc&uact=5&oq=Olle+Bengtsson&gs_lp=Egdnd3Mtd2l6Ig5PbGxlIEJlbmd0c3NvbjIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAEMgUQABiABDIGEAAYFhgeMgYQABgWGB4yBhAAGBYYHjIGEAAYFhgeSKwOUABYvg1wAHgAkAEAmAGSA6ABmhaqAQkwLjYuMy4yLjG4AQPIAQD4AQGYAgygArMWwgIKECMYgAQYJxiKBcICBBAjGCfCAgsQLhiABBjRAxjHAcICCxAuGIAEGMcBGK8BwgIFEC4YgATCAg4QLhiABBjHARjLARivAcICCBAAGIAEGMsBwgIIEC4YgAQY1ALCAgoQABiABBgKGMsBmAMAkgcJMC41LjQuMi4xoAeclQGyBwkwLjUuNC4yLjG4B7MW&sclient=gws-wiz";
-        setDisplayUrl(specificSearchUrl);
-        setTitle("Olle Bengtsson - Google Search - Google Chrome");
-      }
+      // Handle any specific messages from polisens-interna if needed
+      // Currently no special handling required
+      console.log("Message from iframe:", event.data);
     };
 
     window.addEventListener('message', handleMessage);
@@ -114,15 +241,27 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({ isMinimized, setIs
   }, [currentUrl]); // Re-run if the iframe src changes (though it's static for now)
 
 
-  if (isMinimized) return null; // Don't render if minimized
+  if (isMinimized || isClosed) return null; // Don't render if minimized or closed
 
   return (
     // Main container mimics a maximized window covering the area above the taskbar
-    <div className={cn(
-        "flex flex-col bg-[#dee1e6] shadow-xl border border-[#a0a0a0] rounded-t-lg", // Chrome-like background
-        isMaximized ? "fixed inset-0 bottom-12 z-30" : "absolute w-[950px] h-[700px] z-30" // Adjust non-maximized style if needed
+    <div
+      ref={windowRef}
+      className={cn(
+        "flex flex-col bg-[#dee1e6] shadow-xl border border-[#a0a0a0]", // Chrome-like background
+        isMaximized ? "fixed inset-0 bottom-12 z-30" : "absolute z-30" // Removed rounded corners
       )}
-      style={!isMaximized ? { left: '50px', top: '50px' } : {}} // Example position if not maximized
+      style={isMaximized ? {} : {
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        width: `${windowSize.width}px`,
+        height: `${windowSize.height}px`,
+        resize: "both", // Allow resizing in windowed mode
+        overflow: "hidden", // Hide overflow during resize
+        minWidth: "400px", // Minimum window size
+        minHeight: "300px",
+        cursor: isDragging ? "grabbing" : "default"
+      }}
     >
       {/* Use WindowTitleBar for standard window controls */}
       <WindowTitleBar
@@ -132,6 +271,7 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({ isMinimized, setIs
         onClose={handleClose} // Use handleClose which minimizes
         onMinimize={handleMinimize}
         onMaximize={toggleMaximize}
+        onMouseDown={handleMouseDown} // Add dragging support
         // Custom styling to better match Chrome might be needed here or via props
         // Removed className prop as it's not accepted by WindowTitleBar
       />
@@ -168,7 +308,7 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({ isMinimized, setIs
       </div>
 
       {/* Content Area (Iframe) */}
-      <div className="flex-1 bg-white overflow-hidden">
+      <div className={`flex-1 bg-white overflow-hidden ${!isMaximized ? 'pr-2 pb-2' : ''}`}>
         <iframe
           ref={iframeRef}
           src={currentUrl}

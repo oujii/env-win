@@ -5,9 +5,16 @@ import { WindowsDialog } from "../components/WindowsDialog";
 interface IndexProps {
   isMainWindowMinimized: boolean;
   setIsMainWindowMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+  isMainWindowClosed: boolean;
+  setIsMainWindowClosed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Index: React.FC<IndexProps> = ({ isMainWindowMinimized, setIsMainWindowMinimized }) => {
+const Index: React.FC<IndexProps> = ({
+  isMainWindowMinimized,
+  setIsMainWindowMinimized,
+  isMainWindowClosed,
+  setIsMainWindowClosed
+}) => {
   return (
     // Changed background from solid blue to image
     <div
@@ -15,7 +22,12 @@ const Index: React.FC<IndexProps> = ({ isMainWindowMinimized, setIsMainWindowMin
       style={{ backgroundImage: "url('/wallpaper-sos-alarm.png')" }} // Set background image URL
     >
       {/* Pass the props down to WindowsDialog */}
-      <WindowsDialog isMinimized={isMainWindowMinimized} setIsMinimized={setIsMainWindowMinimized} />
+      <WindowsDialog
+        isMinimized={isMainWindowMinimized}
+        setIsMinimized={setIsMainWindowMinimized}
+        isClosed={isMainWindowClosed}
+        setIsClosed={setIsMainWindowClosed}
+      />
     </div>
   );
 };
