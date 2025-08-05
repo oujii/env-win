@@ -13,21 +13,63 @@ import { WindowsStartbar } from "./components/WindowsStartbar";
 const queryClient = new QueryClient();
 
 const App = () => {
-  // State to control the main window's minimized status
+  // Browser window state
   const [isMainWindowMinimized, setIsMainWindowMinimized] = useState(false);
-  // State to control if the main window is completely closed - start closed
   const [isMainWindowClosed, setIsMainWindowClosed] = useState(true);
+
+  // Chat window state
+  const [isChatWindowMinimized, setIsChatWindowMinimized] = useState(false);
+  const [isChatWindowClosed, setIsChatWindowClosed] = useState(true);
+
+  // Chat window 2 state
+  const [isChatWindow2Minimized, setIsChatWindow2Minimized] = useState(false);
+  const [isChatWindow2Closed, setIsChatWindow2Closed] = useState(true);
+
+  // Window focus management
+  const [activeWindow, setActiveWindow] = useState<'browser' | 'chat' | 'chat2' | null>(null);
 
   // Function to toggle the main window's visibility
   const toggleMainWindowVisibility = () => {
     if (isMainWindowClosed) {
-      // If window is closed, reopen it
+      // If window is closed, reopen it and make it active
       setIsMainWindowClosed(false);
       setIsMainWindowMinimized(false);
+      setActiveWindow('browser');
     } else {
       // If window is open, just toggle minimize
       setIsMainWindowMinimized(prev => !prev);
     }
+  };
+
+  // Function to toggle the chat window's visibility
+  const toggleChatWindowVisibility = () => {
+    if (isChatWindowClosed) {
+      // If window is closed, reopen it and make it active
+      setIsChatWindowClosed(false);
+      setIsChatWindowMinimized(false);
+      setActiveWindow('chat');
+    } else {
+      // If window is open, just toggle minimize
+      setIsChatWindowMinimized(prev => !prev);
+    }
+  };
+
+  // Function to toggle the chat window 2's visibility
+  const toggleChatWindow2Visibility = () => {
+    if (isChatWindow2Closed) {
+      // If window is closed, reopen it and make it active
+      setIsChatWindow2Closed(false);
+      setIsChatWindow2Minimized(false);
+      setActiveWindow('chat2');
+    } else {
+      // If window is open, just toggle minimize
+      setIsChatWindow2Minimized(prev => !prev);
+    }
+  };
+
+  // Function to handle window focus (bring to front)
+  const handleWindowFocus = (windowType: 'browser' | 'chat' | 'chat2') => {
+    setActiveWindow(windowType);
   };
 
   return (
@@ -43,6 +85,16 @@ const App = () => {
               setIsMainWindowMinimized={setIsMainWindowMinimized}
               isMainWindowClosed={isMainWindowClosed}
               setIsMainWindowClosed={setIsMainWindowClosed}
+              isChatWindowMinimized={isChatWindowMinimized}
+              setIsChatWindowMinimized={setIsChatWindowMinimized}
+              isChatWindowClosed={isChatWindowClosed}
+              setIsChatWindowClosed={setIsChatWindowClosed}
+              isChatWindow2Minimized={isChatWindow2Minimized}
+              setIsChatWindow2Minimized={setIsChatWindow2Minimized}
+              isChatWindow2Closed={isChatWindow2Closed}
+              setIsChatWindow2Closed={setIsChatWindow2Closed}
+              activeWindow={activeWindow}
+              onWindowFocus={handleWindowFocus}
             />} />
             <Route path="/incident" element={<Incidentrapportering />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
@@ -51,8 +103,14 @@ const App = () => {
           {/* Pass toggle function and window status to Startbar */}
           <WindowsStartbar
             onToggleMainWindow={toggleMainWindowVisibility}
+            onToggleChatWindow={toggleChatWindowVisibility}
+            onToggleChatWindow2={toggleChatWindow2Visibility}
             isMainWindowMinimized={isMainWindowMinimized}
             isMainWindowClosed={isMainWindowClosed}
+            isChatWindowMinimized={isChatWindowMinimized}
+            isChatWindowClosed={isChatWindowClosed}
+            isChatWindow2Minimized={isChatWindow2Minimized}
+            isChatWindow2Closed={isChatWindow2Closed}
           />
         </BrowserRouter>
       </TooltipProvider>

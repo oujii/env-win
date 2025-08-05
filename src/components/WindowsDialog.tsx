@@ -10,13 +10,17 @@ interface WindowsDialogProps {
   setIsMinimized: React.Dispatch<React.SetStateAction<boolean>>;
   isClosed: boolean;
   setIsClosed: React.Dispatch<React.SetStateAction<boolean>>;
+  isActive: boolean;
+  onFocus: () => void;
 }
 
 export const WindowsDialog: React.FC<WindowsDialogProps> = ({
   isMinimized,
   setIsMinimized,
   isClosed,
-  setIsClosed
+  setIsClosed,
+  isActive,
+  onFocus
 }) => {
   const [isMaximized, setIsMaximized] = useState(true); // Start maximized
   const [currentUrl, setCurrentUrl] = useState("/polisens-interna/index.html"); // Default to polisens-interna index
@@ -69,6 +73,10 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
 
   const handleMinimize = () => {
     setIsMinimized(true);
+  };
+
+  const handleWindowClick = () => {
+    onFocus(); // Bring this window to front
   };
 
   // Dragging functionality
@@ -249,9 +257,11 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
       ref={windowRef}
       className={cn(
         "flex flex-col bg-[#dee1e6] shadow-xl border border-[#a0a0a0]", // Chrome-like background
-        isMaximized ? "fixed inset-0 bottom-12 z-30" : "absolute z-30" // Removed rounded corners
+        isMaximized ? "fixed inset-0 bottom-12" : "absolute" // Removed rounded corners and z-index classes
       )}
-      style={isMaximized ? {} : {
+      style={isMaximized ? {
+        zIndex: isActive ? 40 : 30
+      } : {
         left: `${position.x}px`,
         top: `${position.y}px`,
         width: `${windowSize.width}px`,
@@ -260,14 +270,17 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
         overflow: "hidden", // Hide overflow during resize
         minWidth: "400px", // Minimum window size
         minHeight: "300px",
-        cursor: isDragging ? "grabbing" : "default"
+        cursor: isDragging ? "grabbing" : "default",
+        zIndex: isActive ? 40 : 30
       }}
+      onClick={handleWindowClick}
     >
       {/* Use WindowTitleBar for standard window controls */}
       <WindowTitleBar
         title={title} // Use dynamic title
         isMainWindow={true} // Indicate this is the main window
         isFullscreen={isMaximized}
+        isActive={isActive}
         onClose={handleClose} // Use handleClose which minimizes
         onMinimize={handleMinimize}
         onMaximize={toggleMaximize}

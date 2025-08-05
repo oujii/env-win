@@ -9,6 +9,7 @@ interface WindowTitleBarProps {
   isMainWindow?: boolean;
   isFullscreen?: boolean;
   onMouseDown?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  isChatWindow?: boolean; // New prop to distinguish chat windows
 }
 
 const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
@@ -19,7 +20,8 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   onMaximize,
   isMainWindow = false,
   isFullscreen = false,
-  onMouseDown
+  onMouseDown,
+  isChatWindow = false
 }) => {
   const handleMaximizeClick = () => {
     // Use the onMaximize prop instead of browser fullscreen
@@ -29,6 +31,64 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   };
 
   if (isMainWindow) {
+    // Chat window variant - clean titlebar without tabs
+    if (isChatWindow) {
+      return (
+        <div
+          className={`overflow-hidden shadow-md flex items-center justify-between h-10 px-4 bg-[#F3F3F3] border-b border-[#F3F3F3] ${!isFullscreen ? 'cursor-move' : ''}`}
+          style={{ marginBottom: '-3px' }} // Added negative margin-bottom
+          onMouseDown={onMouseDown}
+        >
+          <div className="flex items-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span className="text-black text-sm font-normal">
+              {title}
+            </span>
+          </div>
+          <div className="flex items-center">
+            <button
+              className="w-[46px] h-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors"
+              onClick={onMinimize}
+              aria-label="Minimize"
+            >
+              <svg width="10" height="10" viewBox="0 0 10.2 1" fill="black">
+                <rect x="0" y="0" width="10.2" height="1"></rect>
+              </svg>
+            </button>
+            <button
+              className="w-[46px] h-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors"
+              onClick={handleMaximizeClick}
+              aria-label={isFullscreen ? "Restore" : "Maximize"}
+            >
+              {isFullscreen ? (
+                // Restore icon (two overlapping squares)
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="black">
+                  <path d="M2,0v2h6v6h2V0H2z M0,2v8h8V2H0z M7,3v5H1V3H7z"></path>
+                </svg>
+              ) : (
+                // Maximize icon (single square)
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="black">
+                  <path d="M0,0v10h10V0H0z M9,9H1V1h8V9z"></path>
+                </svg>
+              )}
+            </button>
+            <button
+              className="w-[46px] h-8 flex items-center justify-center hover:bg-red-600 active:bg-red-400 transition-colors"
+              onClick={onClose}
+              aria-label="Close"
+            >
+              <svg width="10" height="10" viewBox="0 0 10.2 10.2" fill="black">
+                <polygon points="10.2,0.7 9.5,0 5.1,4.4 0.7,0 0,0.7 4.4,5.1 0,9.5 0.7,10.2 5.1,5.8 9.5,10.2 10.2,9.5 5.8,5.1"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Browser window variant - with tabs and complex layout
     return (
       <div
         className={`overflow-hidden shadow-md flex items-center justify-between h-10 px-2 bg-[#DEE1E6] border-b border-[#DEE1E6] ${!isFullscreen ? 'cursor-move' : ''}`}

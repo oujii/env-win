@@ -6,14 +6,26 @@ import { DateTimeSettingsPopup } from './DateTimeSettingsPopup'; // Import the p
 // Define props interface
 interface WindowsStartbarProps {
   onToggleMainWindow?: () => void; // Optional prop to toggle main window
+  onToggleChatWindow?: () => void; // Optional prop to toggle chat window
+  onToggleChatWindow2?: () => void; // Optional prop to toggle chat window 2
   isMainWindowMinimized?: boolean; // Window minimized status
   isMainWindowClosed?: boolean; // Window closed status
+  isChatWindowMinimized?: boolean; // Chat window minimized status
+  isChatWindowClosed?: boolean; // Chat window closed status
+  isChatWindow2Minimized?: boolean; // Chat window 2 minimized status
+  isChatWindow2Closed?: boolean; // Chat window 2 closed status
 }
 
 export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
   onToggleMainWindow,
+  onToggleChatWindow,
+  onToggleChatWindow2,
   isMainWindowMinimized = false,
-  isMainWindowClosed = false
+  isMainWindowClosed = false,
+  isChatWindowMinimized = false,
+  isChatWindowClosed = false,
+  isChatWindow2Minimized = false,
+  isChatWindow2Closed = false
 }) => {
   const [dateTime, setDateTime] = useState(new Date()); // State for the current date and time
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
@@ -236,7 +248,9 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
 
           {/* ResCueX Icon Button */}
           <button
-            className={`h-full w-12 flex items-center justify-center hover:bg-gray-800 transition-colors relative ${
+            className={`h-full w-12 mr-2 flex items-center justify-center hover:bg-gray-800 transition-colors relative ${
+              !isMainWindowClosed && !isMainWindowMinimized ? 'bg-gray-800' : ''
+            } ${
               !isMainWindowClosed ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-500" : ""
             }`}
             onClick={onToggleMainWindow} // Call the passed function
@@ -246,6 +260,36 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
               // Optional: Add a fallback SVG or different placeholder if chrome.jpg fails
               e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cline x1='21.17' y1='8' x2='12' y2='8'/%3E%3Cline x1='3.95' y1='6.06' x2='8.54' y2='14'/%3E%3Cline x1='10.88' y1='21.94' x2='15.46' y2='14'/%3E%3C/svg%3E"; // Example Chrome-like fallback
             }} />
+          </button>
+
+          {/* Chat Application Icon Button */}
+          <button
+            className={`h-full w-12 mr-2 flex items-center justify-center hover:bg-gray-800 transition-colors relative ${
+              !isChatWindowClosed && !isChatWindowMinimized ? 'bg-gray-800' : ''
+            } ${
+              !isChatWindowClosed ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-500" : ""
+            }`}
+            onClick={onToggleChatWindow} // Call the passed function
+            title="Microsoft Teams" // Update title for accessibility/tooltip
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+
+          {/* Chat Application 2 Icon Button */}
+          <button
+            className={`h-full w-12 mr-2 flex items-center justify-center hover:bg-gray-800 transition-colors relative ${
+              !isChatWindow2Closed && !isChatWindow2Minimized ? 'bg-gray-800' : ''
+            } ${
+              !isChatWindow2Closed ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-500" : ""
+            }`}
+            onClick={onToggleChatWindow2} // Call the passed function
+            title="Microsoft Teams 2" // Update title for accessibility/tooltip
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
           </button>
           {/* Removed Incident Link */}
         </div>
