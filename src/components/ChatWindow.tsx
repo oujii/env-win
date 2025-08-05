@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WindowTitleBar from "./WindowTitleBar";
@@ -11,19 +11,50 @@ interface ChatWindowProps {
   setIsClosed: React.Dispatch<React.SetStateAction<boolean>>;
   isActive: boolean;
   onFocus: () => void;
+  isScriptedSequenceActive?: boolean;
+  setIsScriptedSequenceActive?: React.Dispatch<React.SetStateAction<boolean>>;
+  systemDateTime: Date;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ 
-  isMinimized, 
-  setIsMinimized, 
-  isClosed, 
+export const ChatWindow: React.FC<ChatWindowProps> = ({
+  isMinimized,
+  setIsMinimized,
+  isClosed,
   setIsClosed,
   isActive,
-  onFocus
+  onFocus,
+  isScriptedSequenceActive = false,
+  setIsScriptedSequenceActive,
+  systemDateTime
 }) => {
   const [isMaximized, setIsMaximized] = useState(false); // Start windowed
   const [message, setMessage] = useState("");
   const windowRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Scripted conversation state
+  const [messages, setMessages] = useState<Array<{id: number, sender: 'Thomas' | 'Max', text: string, timestamp: string}>>([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isWaitingForUserInput, setIsWaitingForUserInput] = useState(false);
+  const [showFileDialog, setShowFileDialog] = useState(false);
+  const [forcedText, setForcedText] = useState('');
+  const [forcedTextIndex, setForcedTextIndex] = useState(0);
+
+  // Scripted conversation sequence
+  const conversationScript = [
+    { type: 'thomas', text: 'Jag behöver din hjälp', delay: 0 }, // Already shown in notification
+    { type: 'thomas', text: 'Är du där?', delay: 4000 }, // 4 seconds after opening (was 2)
+    { type: 'user_input', expectedText: 'Jag är här.', delay: 0 }, // User input
+    { type: 'thomas', text: 'Ge mig all uniformerad personal som anklagats för våld i tjänsten. Dom senaste fem åren.', delay: 6000 }, // 6 seconds after user input (was 3)
+    { type: 'user_input', expectedText: 'Det är många.', delay: 0 }, // User input
+    { type: 'thomas', text: 'Exkludera kvinnlig personal och män med annat etniskt ursprung.', delay: 6000 }, // 6 seconds after user input (was 3)
+    { type: 'user_input', expectedText: '16 kvar.', delay: 0 }, // User input
+    { type: 'thomas', text: 'Och I tjänst under mordnätterna?', delay: 5000 }, // 5 seconds (was 2)
+    { type: 'user_input', expectedText: '1.', delay: 0 }, // User input
+    { type: 'thomas', text: 'Skicka mig hans personalakt', delay: 4000 }, // 4 seconds (was 2)
+    { type: 'file_attachment', delay: 0 }, // File attachment action
+    { type: 'thomas', text: 'Tack, gamle vän.', delay: 4000 } // 4 seconds after file sent (was 2)
+  ];
   
   // Windowed mode state
   const [position, setPosition] = useState({ x: 0, y: 0 }); // Will be calculated on first render
@@ -36,17 +67,37 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     const taskbarHeight = 48; // Height of taskbar (h-12 = 48px)
     const availableWidth = window.innerWidth;
     const availableHeight = window.innerHeight - taskbarHeight;
-    
-    // Smaller size for chat window
-    const width = Math.floor(availableWidth * 0.4); // 40% width
-    const height = Math.floor(availableHeight * 0.6); // 60% height
-    
+
+    // Larger size for chat window
+    const width = Math.floor(availableWidth * 0.6); // 60% width (increased from 40%)
+    const height = Math.floor(availableHeight * 0.7); // 70% height (increased from 60%)
+
     // Position offset from browser window
-    const x = Math.floor(availableWidth * 0.5); // Start more to the right
+    const x = Math.floor(availableWidth * 0.15); // Start more to the left (was 0.5)
     const y = Math.floor((availableHeight - height) / 4); // Start higher up
-    
+
     return { x, y, width, height };
   };
+
+  // Function to scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Function to add a message to the conversation
+  const addMessage = useCallback((sender: 'Thomas' | 'Max', text: string) => {
+    const newMessage = {
+      id: Date.now(),
+      sender,
+      text,
+      timestamp: systemDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+    };
+    setMessages(prev => [...prev, newMessage]);
+    // Auto-scroll to bottom after adding message
+    setTimeout(scrollToBottom, 100);
+  }, [systemDateTime]);
+
+
 
   // Initialize windowed dimensions on first render
   useEffect(() => {
@@ -166,9 +217,82 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     return () => window.removeEventListener('resize', handleWindowResize);
   }, [position, isMaximized]);
 
+  // Effect to start scripted sequence when activated
+  useEffect(() => {
+    if (isScriptedSequenceActive) {
+      // Reset everything immediately when sequence starts
+      setMessages([]);
+      setCurrentStep(0);
+      setIsWaitingForUserInput(false);
+      setForcedText('');
+      setForcedTextIndex(0);
+      setMessage('');
+      setShowFileDialog(false);
+
+      // Add the initial Thomas message after reset is complete
+      setTimeout(() => {
+        setMessages([{
+          id: Date.now(),
+          sender: 'Thomas',
+          text: 'Jag behöver din hjälp',
+          timestamp: systemDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+        }]);
+        setCurrentStep(1);
+        setTimeout(scrollToBottom, 100);
+      }, 50);
+    }
+  }, [isScriptedSequenceActive]);
+
+  // Effect to handle step progression
+  useEffect(() => {
+    if (isScriptedSequenceActive && currentStep > 0 && currentStep < conversationScript.length) {
+      const currentScriptStep = conversationScript[currentStep];
+
+      if (currentScriptStep.type === 'thomas') {
+        setTimeout(() => {
+          addMessage('Thomas', currentScriptStep.text);
+          setCurrentStep(prev => prev + 1);
+        }, currentScriptStep.delay);
+      } else if (currentScriptStep.type === 'user_input') {
+        setIsWaitingForUserInput(true);
+        setForcedText(currentScriptStep.expectedText);
+        setForcedTextIndex(0);
+        setMessage(''); // Clear input
+      } else if (currentScriptStep.type === 'file_attachment') {
+        setIsWaitingForUserInput(false);
+      }
+    }
+  }, [currentStep, isScriptedSequenceActive, addMessage]);
+
+  // Handle input change with forced typing
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isScriptedSequenceActive && isWaitingForUserInput && forcedText) {
+      // In forced typing mode, advance one character for each keystroke
+      if (forcedTextIndex < forcedText.length) {
+        const nextIndex = forcedTextIndex + 1;
+        setForcedTextIndex(nextIndex);
+        setMessage(forcedText.substring(0, nextIndex));
+      }
+    } else {
+      // Normal typing mode
+      setMessage(e.target.value);
+    }
+  };
+
   const handleSendMessage = () => {
-    if (message.trim()) {
-      // TODO: Implement actual message sending
+    if (isScriptedSequenceActive && isWaitingForUserInput) {
+      // In scripted mode, send the expected text regardless of what user typed
+      const currentScriptStep = conversationScript[currentStep];
+      if (currentScriptStep && currentScriptStep.type === 'user_input') {
+        addMessage('Max', currentScriptStep.expectedText);
+        setMessage("");
+        setIsWaitingForUserInput(false);
+        setForcedText('');
+        setForcedTextIndex(0);
+        setCurrentStep(prev => prev + 1);
+      }
+    } else if (message.trim()) {
+      // Normal chat mode
       console.log("Sending message:", message);
       setMessage("");
     }
@@ -312,7 +436,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                     <div className="text-sm font-medium text-black truncate">Thomas Berg</div>
                     <div className="text-xs text-gray-600">20/06/2025</div>
                   </div>
-                  <div className="text-xs text-gray-600 truncate">Jag behöver din hjälp</div>
+                  <div className="text-xs text-gray-600 truncate">
+                    {messages.length > 0 ? messages[messages.length - 1].text : 'Jag behöver din hjälp'}
+                  </div>
                 </div>
               </div>
 
@@ -434,47 +560,28 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
           {/* Messages Area */}
           <div className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-4">
-              {/* Message from Thomas Berg */}
-              <div className="flex items-start space-x-3">
-                <div className="w-9 h-9 bg-[#464951] rounded-sm flex items-center justify-center text-white text-sm font-medium">
-                  MA
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-0.1">
-                    <div className="text-sm font-[600] text-black">Thomas Berg</div>
-                    <div className="text-xs text-gray-500">11:57</div>
+            <div className="space-y-6">
+              {messages.map((msg) => (
+                <div key={msg.id} className="flex space-x-3">
+                  <div className={`w-9 h-9 rounded-sm flex items-center justify-center text-white text-sm font-medium flex-shrink-0 mt-1 ${
+                    msg.sender === 'Thomas' ? 'bg-[#464951]' : 'bg-[#828A9E]'
+                  }`}>
+                    {msg.sender === 'Thomas' ? 'TB' : 'MA'}
                   </div>
-                  <div className="text-sm text-gray-800">Skicka mig hans personakt</div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-0.1">
+                      <div className="text-sm font-[600] text-black">
+                        {msg.sender === 'Thomas' ? 'Thomas Berg' : 'Max Abrahamsson'}
+                      </div>
+                      <div className="text-xs text-gray-500">{msg.timestamp}</div>
+                    </div>
+                    <div className="text-sm text-gray-800">{msg.text}</div>
+                  </div>
                 </div>
-              </div>
+              ))}
 
-              {/* Messages from Max Abrahamsson */}
-              <div className="flex items-start space-x-3">
-                <div className="w-9 h-9 bg-[#828A9E] rounded-sm flex items-center justify-center text-white text-sm font-medium">
-                  MA
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <div className="text-sm font-medium text-black">Max Abrahamsson</div>
-                    <div className="text-xs text-gray-500">11:57</div>
-                  </div>
-                  <div className="text-sm text-gray-800">Jajjemen det kan du hoppa upp o sätta dig på!</div>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
-                <div className="w-9 h-9 bg-[#6c6c6c] rounded-sm flex items-center justify-center text-white text-sm font-medium">
-                  MA
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <div className="text-sm font-medium text-black">Max Abrahamsson</div>
-                    <div className="text-xs text-gray-500">11:57</div>
-                  </div>
-                  <div className="text-sm text-gray-800">Jajjemen det kan du hoppa upp o sätta dig på!</div>
-                </div>
-              </div>
+              {/* Invisible element to scroll to */}
+              <div ref={messagesEndRef} />
             </div>
           </div>
 
@@ -482,7 +589,15 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           <div className="border-t border-[#e0e0e0] p-4 bg-white">
             <div className="flex items-center space-x-2">
             
-              <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded">
+              <button
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded"
+                onClick={() => {
+                  if (isScriptedSequenceActive && currentStep === conversationScript.length - 2) {
+                    // In scripted mode at file attachment step
+                    setShowFileDialog(true);
+                  }
+                }}
+              >
                 <Paperclip size={16} />
               </button>
                {/* Smiley Icon */}
@@ -498,8 +613,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 <input
                   type="text"
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  onChange={handleInputChange}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                   placeholder=""
                   className="w-full px-3 py-2 border border-[#c0c0c0] rounded text-sm focus:outline-none focus:border-[#0078d4]"
                 />
@@ -518,6 +633,65 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
         </div>
       </div>
+
+      {/* File Dialog */}
+      {showFileDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white border border-[#a0a0a0] shadow-xl w-96 h-80">
+            {/* Dialog Title Bar */}
+            <div className="bg-[#F3F3F3] border-b border-[#a0a0a0] px-3 py-2 flex items-center justify-between">
+              <span className="text-sm font-normal">Bifoga fil</span>
+              <button
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowFileDialog(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Dialog Content */}
+            <div className="p-4 flex-1">
+              <div className="mb-4">
+                <div className="text-sm mb-2">Välj fil att bifoga:</div>
+                <div className="border border-[#c0c0c0] p-2 bg-white h-32 overflow-y-auto">
+                  <div className="space-y-1">
+                    <div className="flex items-center p-1 hover:bg-blue-100 cursor-pointer">
+                      <span className="text-sm">📄 PersonalAkt_Officer_001.pdf</span>
+                    </div>
+                    <div className="flex items-center p-1 hover:bg-blue-100 cursor-pointer">
+                      <span className="text-sm">📄 Incident_Report_2024.docx</span>
+                    </div>
+                    <div className="flex items-center p-1 hover:bg-blue-100 cursor-pointer">
+                      <span className="text-sm">📄 Background_Check.pdf</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dialog Buttons */}
+              <div className="flex justify-end space-x-2">
+                <button
+                  className="px-4 py-2 border border-[#c0c0c0] bg-white hover:bg-gray-50 text-sm"
+                  onClick={() => setShowFileDialog(false)}
+                >
+                  Avbryt
+                </button>
+                <button
+                  className="px-4 py-2 bg-[#0078d4] text-white hover:bg-[#106ebe] text-sm"
+                  onClick={() => {
+                    // Send file and proceed to final message
+                    addMessage('Max', '📎 PersonalAkt_Officer_001.pdf');
+                    setShowFileDialog(false);
+                    setCurrentStep(prev => prev + 1);
+                  }}
+                >
+                  Bifoga
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

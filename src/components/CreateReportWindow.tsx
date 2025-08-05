@@ -14,7 +14,7 @@ export const CreateReportWindow = ({ onClose }: { onClose?: () => void }) => {
   const [reportTitle, setReportTitle] = useState("");
   const [reportType, setReportType] = useState("Incident");
   const [reportDate, setReportDate] = useState(new Date().toISOString().split('T')[0]);
-  const [reportTime, setReportTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  const [reportTime, setReportTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
   const [reportLocation, setReportLocation] = useState("");
   const [reportDescription, setReportDescription] = useState("");
   const [reportPersonnel, setReportPersonnel] = useState("");

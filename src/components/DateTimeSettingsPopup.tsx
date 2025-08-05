@@ -115,6 +115,9 @@ export const DateTimeSettingsPopup: React.FC<DateTimeSettingsPopupProps> = ({
           value={timeInput}
           onChange={(e) => setTimeInput(e.target.value)}
           className="h-7 text-xs"
+          step="60" // Only allow hour and minute selection
+          pattern="[0-9]{2}:[0-9]{2}" // Force 24-hour format
+          style={{ colorScheme: 'dark' }} // Force 24-hour format in most browsers
         />
       </div>
       <div className="flex justify-end gap-2 mt-2">

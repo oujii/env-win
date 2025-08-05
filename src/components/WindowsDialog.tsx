@@ -22,7 +22,7 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
   isActive,
   onFocus
 }) => {
-  const [isMaximized, setIsMaximized] = useState(true); // Start maximized
+  const [isMaximized, setIsMaximized] = useState(false); // Start windowed
   const [currentUrl, setCurrentUrl] = useState("/polisens-interna/index.html"); // Default to polisens-interna index
   const [displayUrl, setDisplayUrl] = useState("https://192.168.1.245"); // Initial display URL
   const [title, setTitle] = useState("Polismyndigheten | DurTvå"); // Initial title
@@ -41,9 +41,9 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
     const availableWidth = window.innerWidth;
     const availableHeight = window.innerHeight - taskbarHeight;
 
-    // 80% of available space as requested
-    const width = Math.floor(availableWidth * 0.8);
-    const height = Math.floor(availableHeight * 0.8);
+    // Semi-large window size
+    const width = Math.floor(availableWidth * 0.7); // 70% width
+    const height = Math.floor(availableHeight * 0.75); // 75% height
 
     // Center the window
     const x = Math.floor((availableWidth - width) / 2);

@@ -8,28 +8,43 @@ interface WindowsStartbarProps {
   onToggleMainWindow?: () => void; // Optional prop to toggle main window
   onToggleChatWindow?: () => void; // Optional prop to toggle chat window
   onToggleChatWindow2?: () => void; // Optional prop to toggle chat window 2
+  onToggleMailWindow?: () => void; // Optional prop to toggle mail window
   isMainWindowMinimized?: boolean; // Window minimized status
   isMainWindowClosed?: boolean; // Window closed status
   isChatWindowMinimized?: boolean; // Chat window minimized status
   isChatWindowClosed?: boolean; // Chat window closed status
   isChatWindow2Minimized?: boolean; // Chat window 2 minimized status
   isChatWindow2Closed?: boolean; // Chat window 2 closed status
+  isMailWindowMinimized?: boolean; // Mail window minimized status
+  isMailWindowClosed?: boolean; // Mail window closed status
+  onStartScriptedSequence?: () => void; // New prop to start the scripted chat sequence
+  onFocusWindow?: (windowType: 'browser' | 'chat' | 'chat2' | 'mail') => void; // Focus window function
+  systemDateTime: Date; // System date and time
+  onSetSystemDateTime: (newDateTime: Date) => void; // Function to update system time
 }
 
 export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
   onToggleMainWindow,
   onToggleChatWindow,
   onToggleChatWindow2,
+  onToggleMailWindow,
   isMainWindowMinimized = false,
   isMainWindowClosed = false,
   isChatWindowMinimized = false,
   isChatWindowClosed = false,
   isChatWindow2Minimized = false,
-  isChatWindow2Closed = false
+  isChatWindow2Closed = false,
+  isMailWindowMinimized = false,
+  isMailWindowClosed = false,
+  onStartScriptedSequence,
+  onFocusWindow,
+  systemDateTime,
+  onSetSystemDateTime
 }) => {
-  const [dateTime, setDateTime] = useState(new Date()); // State for the current date and time
+  // Use systemDateTime from props instead of local state
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
   const [isDateTimePopupOpen, setIsDateTimePopupOpen] = useState(false); // State for popup visibility
+  const [showNotification, setShowNotification] = useState(false); // State for Thomas Berg notification
   const startMenuRef = useRef<HTMLDivElement>(null);
   const clockRef = useRef<HTMLDivElement>(null); // Ref for the clock element
 
@@ -72,6 +87,32 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
     }
   };
 
+  // Handler for "Starta flöde" - starts the scripted sequence
+  const handleStartaFlode = () => {
+    setIsStartMenuOpen(false); // Close start menu
+
+    // Reset any existing sequence first
+    if (onStartScriptedSequence) {
+      onStartScriptedSequence(); // This will reset the chat window
+    }
+
+    // Wait 5 seconds then show notification
+    setTimeout(() => {
+      setShowNotification(true);
+    }, 5000);
+  };
+
+  // Handler for clicking the notification
+  const handleNotificationClick = () => {
+    setShowNotification(false);
+    if (onStartScriptedSequence) {
+      onStartScriptedSequence(); // Trigger the scripted chat sequence
+    }
+    if (onToggleChatWindow) {
+      onToggleChatWindow(); // Open the chat window
+    }
+  };
+
   return (
     <>
       {/* Start Menu */}
@@ -96,6 +137,15 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
                   </svg>
                   <span className="text-sm">Incident Reporting</span>
                 </Link>
+                <button
+                  onClick={handleStartaFlode}
+                  className="flex items-center px-2 py-1.5 rounded hover:bg-[#f2f2f2] w-full text-left"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#606060" className="mr-3">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" strokeWidth="2"/>
+                  </svg>
+                  <span className="text-sm">Starta flöde</span>
+                </button>
               </div>
             </div>
 
@@ -138,7 +188,14 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
                   </svg>
                   <span className="text-xs">Browser</span>
                 </div>
-                <div className="flex flex-col items-center justify-center p-2 rounded hover:bg-[#f2f2f2] text-center">
+                <div
+                  className="flex flex-col items-center justify-center p-2 rounded hover:bg-[#f2f2f2] text-center cursor-pointer"
+                  onClick={() => {
+                    onToggleMailWindow?.();
+                    onFocusWindow?.('mail');
+                    setIsStartMenuOpen(false);
+                  }}
+                >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#fb8c00" className="mb-1">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" strokeWidth="2"/>
                     <polyline points="22,6 12,13 2,6" strokeWidth="2"/>
@@ -228,8 +285,17 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
         {/* Application Icons */}
         <div className="flex h-full ml-2">
           {/* Placeholder Icons */}
-          <button className="h-full mr-2 w-12 flex items-center justify-center hover:bg-gray-800 transition-colors relative" title="Mail">
-              <img src="/icon.png" alt="Mail" className="w-8 h-8" />
+          <button
+            className={`h-full mr-2 w-12 flex items-center justify-center hover:bg-gray-800 transition-colors relative ${
+              (!isMailWindowClosed || !isMailWindowMinimized) ? 'after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-400' : ''
+            }`}
+            title="Mail"
+            onClick={() => {
+              onToggleMailWindow?.();
+              onFocusWindow?.('mail');
+            }}
+          >
+              <img src="/mail.png" alt="Mail" className="w-8 h-8" />
            </button>
           <button
             className="h-full w-12 mr-2 flex items-center justify-center hover:bg-gray-800 transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 "
@@ -242,9 +308,7 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
           </button>
          
           
-            <button className="h-full mr-2 w-12 flex items-center justify-center hover:bg-gray-800 transition-colors relative" title="Mail">
-              <img src="/mail.png" alt="Mail" className="w-8 h-8" />
-           </button>
+
 
           {/* ResCueX Icon Button */}
           <button
@@ -269,8 +333,11 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
             } ${
               !isChatWindowClosed ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-500" : ""
             }`}
-            onClick={onToggleChatWindow} // Call the passed function
-            title="Microsoft Teams" // Update title for accessibility/tooltip
+            onClick={() => {
+              if (onToggleChatWindow) onToggleChatWindow();
+              if (onFocusWindow) onFocusWindow('chat');
+            }}
+            title="Messenger" // Update title for accessibility/tooltip
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -285,7 +352,7 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
               !isChatWindow2Closed ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-500" : ""
             }`}
             onClick={onToggleChatWindow2} // Call the passed function
-            title="Microsoft Teams 2" // Update title for accessibility/tooltip
+            title="Messenger" // Update title for accessibility/tooltip
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -319,10 +386,10 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
             onClick={() => setIsDateTimePopupOpen(!isDateTimePopupOpen)}
           >
             <span className="text-white text-xs">
-              {dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {systemDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
             </span>
             <span className="text-white text-xs">
-              {dateTime.toLocaleDateString([], { year: 'numeric', month: '2-digit', day: '2-digit' })}
+              {systemDateTime.toLocaleDateString([], { year: 'numeric', month: '2-digit', day: '2-digit' })}
             </span>
           </div>
         </div>
@@ -332,15 +399,46 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
       <DateTimeSettingsPopup
         isOpen={isDateTimePopupOpen}
         onClose={() => setIsDateTimePopupOpen(false)}
-        currentDateTime={dateTime}
+        currentDateTime={systemDateTime}
         onSetDateTime={(newDateTime) => {
-          setDateTime(newDateTime); // Update the displayed time
+          onSetSystemDateTime(newDateTime); // Update the system time
           // Note: This only updates the frontend display.
           // A real implementation would need to sync with a backend or system time.
           console.log("New DateTime set (frontend only):", newDateTime);
         }}
         triggerRef={clockRef}
       />
+
+      {/* Thomas Berg Notification */}
+      {showNotification && (
+        <div
+          className="fixed bottom-16 right-4 w-80 bg-white border border-[#e1e1e1] shadow-lg rounded-lg p-4 z-50 cursor-pointer hover:shadow-xl transition-shadow"
+          onClick={handleNotificationClick}
+        >
+          <div className="flex items-start space-x-3">
+            <div className="w-10 h-10 bg-[#8c8c8c] rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+              TB
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-sm font-medium text-black">Thomas Berg</div>
+                <div className="text-xs text-gray-500">nu</div>
+              </div>
+              <div className="text-sm text-gray-700 mb-1">Jag behöver din hjälp</div>
+              <div className="text-xs text-gray-500">Messenger</div>
+            </div>
+            <button
+              className="text-gray-400 hover:text-gray-600 text-lg leading-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowNotification(false);
+              }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

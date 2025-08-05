@@ -2,6 +2,7 @@ import React from 'react'; // Import React for type definitions
 import { WindowsDialog } from "../components/WindowsDialog";
 import { ChatWindow } from "../components/ChatWindow";
 import { ChatWindow2 } from "../components/ChatWindow2";
+import { MailWindow } from "../components/MailWindow";
 
 // Define the props interface
 interface IndexProps {
@@ -17,8 +18,15 @@ interface IndexProps {
   setIsChatWindow2Minimized: React.Dispatch<React.SetStateAction<boolean>>;
   isChatWindow2Closed: boolean;
   setIsChatWindow2Closed: React.Dispatch<React.SetStateAction<boolean>>;
-  activeWindow: 'browser' | 'chat' | 'chat2' | null;
-  onWindowFocus: (windowType: 'browser' | 'chat' | 'chat2') => void;
+  isMailWindowMinimized: boolean;
+  setIsMailWindowMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+  isMailWindowClosed: boolean;
+  setIsMailWindowClosed: React.Dispatch<React.SetStateAction<boolean>>;
+  activeWindow: 'browser' | 'chat' | 'chat2' | 'mail' | null;
+  onWindowFocus: (windowType: 'browser' | 'chat' | 'chat2' | 'mail') => void;
+  isScriptedSequenceActive: boolean;
+  setIsScriptedSequenceActive: React.Dispatch<React.SetStateAction<boolean>>;
+  systemDateTime: Date;
 }
 
 const Index: React.FC<IndexProps> = ({
@@ -34,14 +42,24 @@ const Index: React.FC<IndexProps> = ({
   setIsChatWindow2Minimized,
   isChatWindow2Closed,
   setIsChatWindow2Closed,
+  isMailWindowMinimized,
+  setIsMailWindowMinimized,
+  isMailWindowClosed,
+  setIsMailWindowClosed,
   activeWindow,
-  onWindowFocus
+  onWindowFocus,
+  isScriptedSequenceActive,
+  setIsScriptedSequenceActive,
+  systemDateTime
 }) => {
   return (
     // Changed background from solid blue to image
     <div
-      className="min-h-screen pb-10 bg-cover bg-center" // Added bg-cover, bg-center, removed bg-[#0078d7]
-      style={{ backgroundImage: "url('/wallpaper-sos-alarm.png')" }} // Set background image URL
+      className="min-h-screen pb-12 bg-contain bg-center bg-no-repeat" // Changed to bg-contain to avoid cropping, added bg-no-repeat
+      style={{
+        backgroundImage: "url('/wallpaper-sos-alarm.png')",
+        backgroundColor: "#1e3a8a" // Fallback color that matches the wallpaper theme
+      }}
     >
       {/* Pass the props down to WindowsDialog */}
       <WindowsDialog
@@ -61,6 +79,9 @@ const Index: React.FC<IndexProps> = ({
         setIsClosed={setIsChatWindowClosed}
         isActive={activeWindow === 'chat'}
         onFocus={() => onWindowFocus('chat')}
+        isScriptedSequenceActive={isScriptedSequenceActive}
+        setIsScriptedSequenceActive={setIsScriptedSequenceActive}
+        systemDateTime={systemDateTime}
       />
 
       {/* Chat Window 2 */}
@@ -71,6 +92,16 @@ const Index: React.FC<IndexProps> = ({
         setIsClosed={setIsChatWindow2Closed}
         isActive={activeWindow === 'chat2'}
         onFocus={() => onWindowFocus('chat2')}
+      />
+
+      {/* Mail Window */}
+      <MailWindow
+        isMinimized={isMailWindowMinimized}
+        setIsMinimized={setIsMailWindowMinimized}
+        isClosed={isMailWindowClosed}
+        setIsClosed={setIsMailWindowClosed}
+        isActive={activeWindow === 'mail'}
+        onFocus={() => onWindowFocus('mail')}
       />
     </div>
   );
