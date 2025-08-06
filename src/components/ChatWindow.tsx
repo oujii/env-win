@@ -53,7 +53,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     { type: 'user_input', expectedText: '1.', delay: 0 }, // User input
     { type: 'thomas', text: 'Skicka mig hans personalakt', delay: 4000 }, // 4 seconds (was 2)
     { type: 'file_attachment', delay: 0 }, // File attachment action
-    { type: 'thomas', text: 'Tack, gamle vän.', delay: 4000 } // 4 seconds after file sent (was 2)
+    { type: 'thomas', text: 'Tack, gamle vän.', delay: 5000 } // 5 seconds after file sent
   ];
   
   // Windowed mode state
@@ -575,7 +575,23 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                       </div>
                       <div className="text-xs text-gray-500">{msg.timestamp}</div>
                     </div>
-                    <div className="text-sm text-gray-800">{msg.text}</div>
+                    <div className="text-sm text-gray-800">
+                      {msg.text.startsWith('ATTACHMENT:') ? (
+                        <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border max-w-xs">
+                          <img src="/attachment.png" alt="Attachment" className="w-10 h-10 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-semibold text-sm text-gray-900 truncate">
+                              {msg.text.replace('ATTACHMENT:', '')}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              186 kB
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        msg.text
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -634,58 +650,215 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
       </div>
 
-      {/* File Dialog */}
+      {/* Windows File Explorer Dialog */}
       {showFileDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white border border-[#a0a0a0] shadow-xl w-96 h-80">
-            {/* Dialog Title Bar */}
-            <div className="bg-[#F3F3F3] border-b border-[#a0a0a0] px-3 py-2 flex items-center justify-between">
-              <span className="text-sm font-normal">Bifoga fil</span>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-[#0078d4] shadow-2xl" style={{ width: '680px', height: '480px', fontFamily: 'Segoe UI, sans-serif' }}>
+            {/* Title Bar */}
+            <div className="h-8 bg-white border-b border-[#e1e1e1] flex items-center justify-between px-2">
+              <div className="flex items-center space-x-2">
+                <img src="file-explorer.png" alt="File" className="w-4 h-4" />
+                <span className="text-xs">Öppna</span>
+              </div>
               <button
-                className="text-gray-500 hover:text-gray-700"
+                className="w-6 h-6 flex items-center justify-center hover:bg-red-500 hover:text-white text-xs"
                 onClick={() => setShowFileDialog(false)}
               >
                 ×
               </button>
             </div>
 
-            {/* Dialog Content */}
-            <div className="p-4 flex-1">
-              <div className="mb-4">
-                <div className="text-sm mb-2">Välj fil att bifoga:</div>
-                <div className="border border-[#c0c0c0] p-2 bg-white h-32 overflow-y-auto">
-                  <div className="space-y-1">
-                    <div className="flex items-center p-1 hover:bg-blue-100 cursor-pointer">
-                      <span className="text-sm">📄 PersonalAkt_Officer_001.pdf</span>
-                    </div>
-                    <div className="flex items-center p-1 hover:bg-blue-100 cursor-pointer">
-                      <span className="text-sm">📄 Incident_Report_2024.docx</span>
-                    </div>
-                    <div className="flex items-center p-1 hover:bg-blue-100 cursor-pointer">
-                      <span className="text-sm">📄 Background_Check.pdf</span>
-                    </div>
+            {/* Navigation Bar */}
+            <div className="h-10 bg-[#f8f9fa] border-b border-[#e1e1e1] flex items-center px-2 space-x-1">
+              <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded">
+                <img src="/open-dialog/SCR-20250806-lyuu.png"   alt="Back" className="h-6 w-80" />
+              </button>
+          
+              <div className="flex-1 mx-2">
+                <div className="flex items-center bg-white border border-gray-300 rounded px-2 py-1 text-xs">
+                  <img src="/open-dialog/SCR-20250806-lypk.png" alt="PC" className="w-4 h-4 mr-1" />
+                  <span>This PC</span>
+                  <span className="mx-1">&gt;</span>
+                  <span>Downloads</span>
+                  <button className="ml-auto">
+                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Dropdown" className="w-8 h-3" />
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center bg-white border border-gray-300 rounded px-2 py-1 text-xs w-48">
+                <span className="text-gray-500">Sök i Hämtade filer</span>
+                <img src="/open-dialog/SCR-20250806-lyxd.png" alt="Search" className="w-4 h-4 mr-1" />
+              </div>
+            </div>
+
+            {/* Toolbar */}
+            <div className="h-10 bg-[#f8f9fa] border-b border-[#e1e1e1] flex items-center px-2 space-x-4">
+              <div className="flex items-center space-x-1">
+                <span className="text-xs text-blue-600">Organize</span>
+                <img src="/open-dialog/SCR-20250806-lyyh.png" alt="Dropdown" className="w-3 h-3" />
+              </div>
+              <span className="text-xs text-blue-600">New folder</span>
+              <div className="ml-auto flex items-center space-x-2">
+                {/*   Move this content to the maximum right START   */}
+                <img src="/open-dialog/SCR-20250806-lytd.png" alt="View" className="w-11 h-4" /> 
+                {/*   Move this content to the maximum right END   */}
+    
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex flex-1 overflow-hidden">
+              {/* Sidebar */}
+              <div className="w-60 bg-[#f8f9fa] border-r border-[#e1e1e1] p-2">
+                <div className="space-y-1 text-xs">
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
+                    <img src="/open-dialog/SCR-20250806-lyuu.png" alt="Favorites" className="w-4 h-4" />
+                    <span>Snabbaccess</span>
+                  </div>
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
+                    <img src="/open-dialog/SCR-20250806-lywl.png" alt="Desktop" className="w-4 h-4" />
+                    <span>Skrivbordet</span>
+                  </div>
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lyxd.png" alt="Downloads" className="w-4 h-4" />
+                    <span>Hämtade filer</span>
+                  </div>
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
+                    <img src="/open-dialog/SCR-20250806-lyxl.png" alt="Documents" className="w-4 h-4" />
+                    <span>Mina dokument</span>
+                  </div>
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
+                    <img src="/open-dialog/SCR-20250806-lyxu.png" alt="Pictures" className="w-4 h-4" />
+                    <span>Bilder</span>
+                  </div>
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
+                    <img src="/open-dialog/SCR-20250806-lyyh.png" alt="Google Drive" className="w-4 h-4" />
+                    <span>Google Drive</span>
+                  </div>
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
+                    <img src="/open-dialog/SCR-20250806-lyyw.png" alt="OneDrive" className="w-4 h-4" />
+                    <span>OneDrive</span>
+                  </div>
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded bg-gray-200">
+                    <img src="/open-dialog/SCR-20250806-mcng.png" alt="This PC" className="w-4 h-4" />
+                    <span>This PC</span>
+                  </div>
+                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
+                    <img src="/open-dialog/SCR-20250806-micg.png" alt="Network" className="w-4 h-4" />
+                    <span>Network</span>
                   </div>
                 </div>
               </div>
 
-              {/* Dialog Buttons */}
-              <div className="flex justify-end space-x-2">
-                <button
-                  className="px-4 py-2 border border-[#c0c0c0] bg-white hover:bg-gray-50 text-sm"
-                  onClick={() => setShowFileDialog(false)}
-                >
-                  Avbryt
+              {/* File List */}
+              <div className="flex-1 bg-white">
+                {/* Column Headers */}
+                <div className="h-8 bg-[#f8f9fa] border-b border-[#e1e1e1] flex items-center px-2 text-xs text-gray-600">
+                  <div className="w-80">Namn</div>
+                  <div className="w-32">Modifierad</div>
+                  <div className="w-32">Typ</div>
+                </div>
+
+                {/* File Items */}
+                <div className="p-2 space-y-1">
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-mlzz.png" alt="PDF" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">INT-2025-04-7731-BK.pdf</div>
+                    <div className="w-32 text-xs text-gray-500">4/10/2025 09:17</div>
+                    <div className="w-32 text-xs text-gray-500">Adobe Acrobat Reader</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-mlzz.png" alt="PDF" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">INT-2025-03-1542-PL.pdf</div>
+                    <div className="w-32 text-xs text-gray-500">5/22/2025 21:45</div>
+                    <div className="w-32 text-xs text-gray-500">Adobe Acrobat Reader</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">FUP-MORDEN</div>
+                    <div className="w-32 text-xs text-gray-500">6/15/2025 14:03</div>
+                    <div className="w-32 text-xs text-gray-500">Mapp</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">ärende_Värmdö</div>
+                    <div className="w-32 text-xs text-gray-500">7/01/2025 06:52</div>
+                    <div className="w-32 text-xs text-gray-500">Mapp</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">34-SP-Personalaktar/Misstänkta</div>
+                    <div className="w-32 text-xs text-gray-500">8/06/2025 18:29</div>
+                    <div className="w-32 text-xs text-gray-500">Mapp</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">Gamla fall</div>
+                    <div className="w-32 text-xs text-gray-500">9/14/2025 11:38</div>
+                    <div className="w-32 text-xs text-gray-500">Mapp</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">Privat</div>
+                    <div className="w-32 text-xs text-gray-500">10/30/2025 23:07</div>
+                    <div className="w-32 text-xs text-gray-500">Mapp</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-lyue.png" alt="Audio" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">ljudupptagning_FARSTA.wav</div>
+                    <div className="w-32 text-xs text-gray-500">11/12/2025 15:56</div>
+                    <div className="w-32 text-xs text-gray-500">Waveform</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-lyxu.png" alt="Image" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">fantombild-Larsson.png</div>
+                    <div className="w-32 text-xs text-gray-500">12/25/2025 08:44</div>
+                    <div className="w-32 text-xs text-gray-500">PNG-fil</div>
+                  </div>
+                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
+                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
+                    <div className="w-80 text-xs">54-MP-Misstänkta</div>
+                    <div className="w-32 text-xs text-gray-500">1/05/2026 20:15</div>
+                    <div className="w-32 text-xs text-gray-500">Mapp</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Bar */}
+            <div className="h-12 bg-[#f8f9fa] border-t border-[#e1e1e1] flex items-center px-4 space-x-4">
+              <div className="flex items-center space-x-2 flex-1">
+                <span className="text-xs">Filnamn:</span>
+                <div className="flex-1 bg-white border border-gray-300 rounded px-2 py-1 text-xs">
+                  INT-2025-04-7731-BK.pdf
+                </div>
+                <button className="text-xs">
+                  <img src="/open-dialog/SCR-20250806-lyqz.png" alt="Dropdown" className="w-3 h-3" />
                 </button>
-                <button
-                  className="px-4 py-2 bg-[#0078d4] text-white hover:bg-[#106ebe] text-sm"
+              </div>
+              <div className="flex items-center">
+                <select className="text-xs bg-white border border-gray-300 rounded px-2 py-1">
+                  <option>Alla filer</option>
+                  <option>PDF-filer (*.pdf)</option>
+                  <option>Dokument (*.doc, *.docx)</option>
+                </select>
+              </div>
+              <div className="flex space-x-2">
+                <button className="px-4 py-1 bg-[#0078d4] text-white text-xs rounded hover:bg-[#106ebe]"
                   onClick={() => {
                     // Send file and proceed to final message
-                    addMessage('Max', '📎 PersonalAkt_Officer_001.pdf');
+                    addMessage('Max', 'ATTACHMENT:INT-2025-04-7731-BK.pdf');
                     setShowFileDialog(false);
                     setCurrentStep(prev => prev + 1);
                   }}
                 >
-                  Bifoga
+                  Öppna
+                </button>
+                <button
+                  className="px-4 py-1 bg-white border border-gray-300 text-xs rounded hover:bg-gray-50"
+                  onClick={() => setShowFileDialog(false)}
+                >
+                  Avbryt
                 </button>
               </div>
             </div>

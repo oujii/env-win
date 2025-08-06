@@ -287,7 +287,7 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
           {/* Placeholder Icons */}
           <button
             className={`h-full mr-2 w-12 flex items-center justify-center hover:bg-gray-800 transition-colors relative ${
-              (!isMailWindowClosed || !isMailWindowMinimized) ? 'after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-400' : ''
+              (!isMailWindowClosed && !isMailWindowMinimized) ? 'after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-400' : ''
             }`}
             title="Mail"
             onClick={() => {

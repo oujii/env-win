@@ -10,6 +10,7 @@ interface WindowTitleBarProps {
   isFullscreen?: boolean;
   onMouseDown?: (e: React.MouseEvent<HTMLDivElement>) => void;
   isChatWindow?: boolean; // New prop to distinguish chat windows
+  isMailWindow?: boolean; // New prop to distinguish mail window
 }
 
 const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
@@ -21,7 +22,8 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   isMainWindow = false,
   isFullscreen = false,
   onMouseDown,
-  isChatWindow = false
+  isChatWindow = false,
+  isMailWindow = false
 }) => {
   const handleMaximizeClick = () => {
     // Use the onMaximize prop instead of browser fullscreen
@@ -35,14 +37,23 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
     if (isChatWindow) {
       return (
         <div
-          className={`overflow-hidden shadow-md flex items-center justify-between h-10 px-4 bg-[#F3F3F3] border-b border-[#F3F3F3] ${!isFullscreen ? 'cursor-move' : ''}`}
+          className={`overflow-hidden shadow-md flex items-center justify-between h-10 pl-4 pr-0 bg-[#F3F3F3] border-b border-[#F3F3F3] ${!isFullscreen ? 'cursor-move' : ''}`}
           style={{ marginBottom: '-3px' }} // Added negative margin-bottom
           onMouseDown={onMouseDown}
         >
           <div className="flex items-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
+            {isMailWindow ? (
+              // Mail icon
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            ) : (
+              // Chat icon (original)
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            )}
             <span className="text-black text-sm font-normal">
               {title}
             </span>
@@ -91,7 +102,7 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
     // Browser window variant - with tabs and complex layout
     return (
       <div
-        className={`overflow-hidden shadow-md flex items-center justify-between h-10 px-2 bg-[#DEE1E6] border-b border-[#DEE1E6] ${!isFullscreen ? 'cursor-move' : ''}`}
+        className={`overflow-hidden shadow-md flex items-center justify-between h-10 pl-4 pr-0 bg-[#DEE1E6] border-b border-[#DEE1E6] ${!isFullscreen ? 'cursor-move' : ''}`}
         style={{ marginBottom: '-3px' }} // Added negative margin-bottom
         onMouseDown={onMouseDown}
       >

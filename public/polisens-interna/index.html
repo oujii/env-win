@@ -96,6 +96,42 @@
             color: #6b7280;
             font-size: 14px;
         }
+
+        /* Download notification styles */
+        .download-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            min-width: 300px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .download-notification.show {
+            transform: translateX(0);
+        }
+
+        .download-progress {
+            width: 100%;
+            height: 4px;
+            background-color: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .download-progress-bar {
+            height: 100%;
+            background-color: #0078d4;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -256,7 +292,7 @@
                     
                     <div class="flex gap-4 mt-6">
                         <button onclick="exportPersonnelFile()" class="bg-green-600 text-white px-6 py-2 font-bold hover:bg-green-700 transition-colors">
-                            Exportera
+                            Generera PDF
                         </button>
                         <button onclick="backToSearchResults()" class="bg-gray-600 text-white px-6 py-2 font-bold hover:bg-gray-700 transition-colors">
                             Tillbaka till sökresultat
@@ -329,6 +365,24 @@
                     Tillbaka till sökning
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Download Notification -->
+    <div id="download-notification" class="download-notification">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <div class="text-sm font-medium text-gray-900" id="download-filename">INT-2025-04-7731-BK.pdf</div>
+                <div class="text-xs text-gray-500" id="download-status">Laddar ner...</div>
+            </div>
+        </div>
+        <div class="download-progress">
+            <div class="download-progress-bar" id="download-progress-bar"></div>
         </div>
     </div>
 
@@ -666,7 +720,39 @@
     }
 
     function exportPersonnelFile() {
-        alert('Personalakt exporteras...');
+        const notification = document.getElementById('download-notification');
+        const progressBar = document.getElementById('download-progress-bar');
+        const statusText = document.getElementById('download-status');
+        const filenameText = document.getElementById('download-filename');
+
+        // Set fixed filename
+        filenameText.textContent = 'INT-2025-04-7731-BK.pdf';
+        statusText.textContent = 'Laddar ner...';
+        progressBar.style.width = '0%';
+
+        // Show notification
+        notification.classList.add('show');
+
+        // Simulate download progress
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 15 + 5; // Random progress between 5-20%
+
+            if (progress >= 100) {
+                progress = 100;
+                progressBar.style.width = '100%';
+                statusText.textContent = 'Nedladdning klar!';
+
+                // Hide notification after 2 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
+
+                clearInterval(interval);
+            } else {
+                progressBar.style.width = progress + '%';
+            }
+        }, 200); // Update every 200ms
     }
 
     function backToSearchResults() {
