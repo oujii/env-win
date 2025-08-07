@@ -37,6 +37,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [isWaitingForUserInput, setIsWaitingForUserInput] = useState(false);
   const [showFileDialog, setShowFileDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState('');
   const [forcedText, setForcedText] = useState('');
   const [forcedTextIndex, setForcedTextIndex] = useState(0);
 
@@ -653,15 +654,15 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       {/* Windows File Explorer Dialog */}
       {showFileDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-[#0078d4] shadow-2xl" style={{ width: '680px', height: '480px', fontFamily: 'Segoe UI, sans-serif' }}>
+          <div className="bg-white border border-[#0078d4] shadow-2xl" style={{ width: '680px', height: '400px', fontFamily: 'Segoe UI, sans-serif' }}>
             {/* Title Bar */}
-            <div className="h-8 bg-white border-b border-[#e1e1e1] flex items-center justify-between px-2">
+            <div className="h-8 mb-1 bg-white flex items-center justify-between px-2">
               <div className="flex items-center space-x-2">
                 <img src="file-explorer.png" alt="File" className="w-4 h-4" />
                 <span className="text-xs">Öppna</span>
               </div>
               <button
-                className="w-6 h-6 flex items-center justify-center hover:bg-red-500 hover:text-white text-xs"
+                className="w-6 h-6 flex items-center justify-center hover:bg-red-500 hover:text-white text-1xl"
                 onClick={() => setShowFileDialog(false)}
               >
                 ×
@@ -669,82 +670,82 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
 
             {/* Navigation Bar */}
-            <div className="h-10 bg-[#f8f9fa] border-b border-[#e1e1e1] flex items-center px-2 space-x-1">
-              <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded">
-                <img src="/open-dialog/SCR-20250806-lyuu.png"   alt="Back" className="h-6 w-80" />
+            <div className="h-10 bg-[#fff] flex items-center px-2 space-x-1">
+              <button className=" h-8 flex items-center justify-center">
+                <img src="/open-dialog/SCR-20250806-lyuu.png"   alt="Back" className="h-6" />
               </button>
           
               <div className="flex-1 mx-2">
-                <div className="flex items-center bg-white border border-gray-300 rounded px-2 py-1 text-xs">
+                <div className="flex items-center bg-white border border-gray-300 px-2 py-1 text-xs">
                   <img src="/open-dialog/SCR-20250806-lypk.png" alt="PC" className="w-4 h-4 mr-1" />
+
+                    <img src="/open-dialog/SCR-20250806-micg.png" alt="PC" className="w-2 h-2 mr-1" />
                   <span>This PC</span>
-                  <span className="mx-1">&gt;</span>
+                    <img src="/open-dialog/SCR-20250806-micg.png" alt="PC" className="w-2 h-2 mr-1 ml-1" />
+
                   <span>Downloads</span>
-                  <button className="ml-auto">
-                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Dropdown" className="w-8 h-3" />
-                  </button>
+                  
                 </div>
               </div>
-              <div className="flex items-center bg-white border border-gray-300 rounded px-2 py-1 text-xs w-48">
-                <span className="text-gray-500">Sök i Hämtade filer</span>
-                <img src="/open-dialog/SCR-20250806-lyxd.png" alt="Search" className="w-4 h-4 mr-1" />
-              </div>
+             <div className="flex items-center justify-between bg-white border border-gray-300 px-2 py-1 text-xs w-48">
+  <span className="text-gray-500">Sök i Hämtade filer</span>
+  <img src="/open-dialog/SCR-20250806-lyxd.png" alt="Search" className="w-4 h-4" />
+</div>
             </div>
 
             {/* Toolbar */}
-            <div className="h-10 bg-[#f8f9fa] border-b border-[#e1e1e1] flex items-center px-2 space-x-4">
-              <div className="flex items-center space-x-1">
-                <span className="text-xs text-blue-600">Organize</span>
-                <img src="/open-dialog/SCR-20250806-lyyh.png" alt="Dropdown" className="w-3 h-3" />
+            <div className="h-10 bg-[#f8f9fa] border-b border-b-[#F0F0F0] flex items-center px-2 relative">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-1">
+                  <span className="text-xs text-[#1F3978] ml-2">Organize</span>
+                  <img src="/open-dialog/SCR-20250806-lyyh.png" alt="Dropdown" className="w-3 h-3" />
+                </div>
+                <span className="text-xs text-[#1F3978]">New folder</span>
               </div>
-              <span className="text-xs text-blue-600">New folder</span>
-              <div className="ml-auto flex items-center space-x-2">
-                {/*   Move this content to the maximum right START   */}
-                <img src="/open-dialog/SCR-20250806-lytd.png" alt="View" className="w-11 h-4" /> 
-                {/*   Move this content to the maximum right END   */}
-    
-              </div>
+              {/*   Move this content to the maximum right START   */}
+              <img src="/open-dialog/SCR-20250806-lytd.png" alt="View" className="h-5 absolute right-2 top-1/2 transform -translate-y-1/2" />
+              {/*   Move this content to the maximum right END   */}
             </div>
 
             {/* Main Content */}
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex h-64 overflow-hidden">
               {/* Sidebar */}
-              <div className="w-60 bg-[#f8f9fa] border-r border-[#e1e1e1] p-2">
+              <div className="w-70 flex-shrink-0 bg-white border-r border-[#F0F0F0] p-6">
                 <div className="space-y-1 text-xs">
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
-                    <img src="/open-dialog/SCR-20250806-lyuu.png" alt="Favorites" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 -pl-3 pb-1 hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lyoi.png" alt="Favorites" className="w-4 h-4" />
                     <span>Snabbaccess</span>
                   </div>
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
-                    <img src="/open-dialog/SCR-20250806-lywl.png" alt="Desktop" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 pt-1  pl-1  hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lyou.png" alt="Desktop" className="w-4 h-4" />
                     <span>Skrivbordet</span>
                   </div>
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded bg-blue-100">
-                    <img src="/open-dialog/SCR-20250806-lyxd.png" alt="Downloads" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 pt-1  pl-1 hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lypk.png" alt="Downloads" className="w-4 h-4" />
                     <span>Hämtade filer</span>
                   </div>
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
-                    <img src="/open-dialog/SCR-20250806-lyxl.png" alt="Documents" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 pt-1  pl-1 hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lypv.png" alt="Documents" className="w-4 h-4" />
                     <span>Mina dokument</span>
                   </div>
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
-                    <img src="/open-dialog/SCR-20250806-lyxu.png" alt="Pictures" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 pt-1 pl-1 hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lyqe.png" alt="Pictures" className="w-4 h-4" />
                     <span>Bilder</span>
                   </div>
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
-                    <img src="/open-dialog/SCR-20250806-lyyh.png" alt="Google Drive" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 pt-1  pl-1 pb-3 hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lyqp.png" alt="Google Drive" className="w-4 h-4" />
                     <span>Google Drive</span>
                   </div>
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
-                    <img src="/open-dialog/SCR-20250806-lyyw.png" alt="OneDrive" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 -pl-3 pt-2 pb-2 hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lyqz.png" alt="OneDrive" className="w-4 h-4" />
                     <span>OneDrive</span>
                   </div>
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded bg-gray-200">
-                    <img src="/open-dialog/SCR-20250806-mcng.png" alt="This PC" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 -pl-3 pt-2 pb-2 hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lyrr.png" alt="This PC" className="w-4 h-4" />
                     <span>This PC</span>
                   </div>
-                  <div className="flex items-center space-x-2 p-1 hover:bg-blue-100 rounded">
-                    <img src="/open-dialog/SCR-20250806-micg.png" alt="Network" className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 -pl-3 pt-2 pb-2 hover:bg-blue-100">
+                    <img src="/open-dialog/SCR-20250806-lysc.png" alt="Network" className="w-4 h-4" />
                     <span>Network</span>
                   </div>
                 </div>
@@ -753,71 +754,99 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               {/* File List */}
               <div className="flex-1 bg-white">
                 {/* Column Headers */}
-                <div className="h-8 bg-[#f8f9fa] border-b border-[#e1e1e1] flex items-center px-2 text-xs text-gray-600">
-                  <div className="w-80">Namn</div>
+                <div className="h-8 bg-white border-b border-[#e1e1e1] flex items-center text-xs text-gray-600">
+                  <div className="w-6"></div> {/* Space for icon */}
+                  <div className="w-80 pl-2">Namn</div>
                   <div className="w-32">Modifierad</div>
                   <div className="w-32">Typ</div>
                 </div>
 
                 {/* File Items */}
-                <div className="p-2 space-y-1">
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer bg-blue-100">
-                    <img src="/open-dialog/SCR-20250806-mlzz.png" alt="PDF" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">INT-2025-04-7731-BK.pdf</div>
-                    <div className="w-32 text-xs text-gray-500">4/10/2025 09:17</div>
-                    <div className="w-32 text-xs text-gray-500">Adobe Acrobat Reader</div>
+                <div className="p-2 space-y-[0px]">
+                  <div
+                    className={`flex items-center py-2 cursor-pointer ${
+                      selectedFile === 'INT-2025-04-7731-BK.pdf'
+                        ? 'bg-[#0078d4] text-white'
+                        : 'hover:bg-[#CCE8FE]'
+                    }`}
+                    onClick={() => setSelectedFile('INT-2025-04-7731-BK.pdf')}
+                  >
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-nzvs.png" alt="PDF" className="h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">INT-2025-04-7731-BK.pdf</div>
+                    <div className={`w-32 text-xs ${selectedFile === 'INT-2025-04-7731-BK.pdf' ? 'text-white' : 'text-gray-500'}`}>4/10/2025 09:17</div>
+                    <div className={`w-32 text-xs ${selectedFile === 'INT-2025-04-7731-BK.pdf' ? 'text-white' : 'text-gray-500'}`}>Adobe Acrobat Reader</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-mlzz.png" alt="PDF" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">INT-2025-03-1542-PL.pdf</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-nzvs.png" alt="PDF" className="h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">INT-2025-03-1542-PL.pdf</div>
                     <div className="w-32 text-xs text-gray-500">5/22/2025 21:45</div>
                     <div className="w-32 text-xs text-gray-500">Adobe Acrobat Reader</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">FUP-MORDEN</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-mcng.png" alt="Folder" className="w-4 h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">FUP-MORDEN</div>
                     <div className="w-32 text-xs text-gray-500">6/15/2025 14:03</div>
                     <div className="w-32 text-xs text-gray-500">Mapp</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">ärende_Värmdö</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-mcng.png" alt="Folder" className="w-4 h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">ärende_Värmdö</div>
                     <div className="w-32 text-xs text-gray-500">7/01/2025 06:52</div>
                     <div className="w-32 text-xs text-gray-500">Mapp</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">34-SP-Personalaktar/Misstänkta</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-mcng.png" alt="Folder" className="w-4 h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">34-SP-Personalaktar/Misstänkta</div>
                     <div className="w-32 text-xs text-gray-500">8/06/2025 18:29</div>
                     <div className="w-32 text-xs text-gray-500">Mapp</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">Gamla fall</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-mcng.png" alt="Folder" className="w-4 h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">Gamla fall</div>
                     <div className="w-32 text-xs text-gray-500">9/14/2025 11:38</div>
                     <div className="w-32 text-xs text-gray-500">Mapp</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">Privat</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-mcng.png" alt="Folder" className="w-4 h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">Privat</div>
                     <div className="w-32 text-xs text-gray-500">10/30/2025 23:07</div>
                     <div className="w-32 text-xs text-gray-500">Mapp</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-lyue.png" alt="Audio" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">ljudupptagning_FARSTA.wav</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-lyxl.png" alt="Audio" className="w-4 h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">ljudupptagning_FARSTA.wav</div>
                     <div className="w-32 text-xs text-gray-500">11/12/2025 15:56</div>
                     <div className="w-32 text-xs text-gray-500">Waveform</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-lyxu.png" alt="Image" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">fantombild-Larsson.png</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/png.png" alt="Image" className="h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">fantombild-Larsson.png</div>
                     <div className="w-32 text-xs text-gray-500">12/25/2025 08:44</div>
                     <div className="w-32 text-xs text-gray-500">PNG-fil</div>
                   </div>
-                  <div className="flex items-center p-1 hover:bg-blue-100 rounded cursor-pointer">
-                    <img src="/open-dialog/SCR-20250806-lyto.png" alt="Folder" className="w-4 h-4 mr-2" />
-                    <div className="w-80 text-xs">54-MP-Misstänkta</div>
+                  <div className="flex items-center py-2 hover:bg-[#CCE8FE] border-blue-900 cursor-pointer">
+                    <div className="w-6 flex justify-center">
+                      <img src="/open-dialog/SCR-20250806-mcng.png" alt="Folder" className="w-4 h-4" />
+                    </div>
+                    <div className="w-80 text-xs pl-2">54-MP-Misstänkta</div>
                     <div className="w-32 text-xs text-gray-500">1/05/2026 20:15</div>
                     <div className="w-32 text-xs text-gray-500">Mapp</div>
                   </div>
@@ -826,25 +855,33 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
 
             {/* Bottom Bar */}
-            <div className="h-12 bg-[#f8f9fa] border-t border-[#e1e1e1] flex items-center px-4 space-x-4">
-              <div className="flex items-center space-x-2 flex-1">
-                <span className="text-xs">Filnamn:</span>
-                <div className="flex-1 bg-white border border-gray-300 rounded px-2 py-1 text-xs">
-                  INT-2025-04-7731-BK.pdf
+            <div className="bg-[#F0F0F0] border-t border-[#e1e1e1] px-4 py-3 -mt-4 relative z-10">
+              {/* First Row - Filnamn and Alla filer */}
+              <div className="flex items-center space-x-4 mb-3">
+                <div className="flex items-center space-x-2 ml-auto">
+                  <span className="text-xs">Filnamn:</span>
+                
+                <div className="bg-white border border-blue-300 px-2 py-1 text-xs w-64 flex items-center justify-between">
+                    <span>{selectedFile || ''}</span>
+                    <button className="text-xs">
+                      <img src="/open-dialog/pilned.png" alt="Dropdown" className="h-4 w-[11px] pt-1 pb-1" />
+                    </button>
+                  </div>
+
+
                 </div>
-                <button className="text-xs">
-                  <img src="/open-dialog/SCR-20250806-lyqz.png" alt="Dropdown" className="w-3 h-3" />
-                </button>
+                <div className="flex items-center">
+                  <select className="text-xs bg-[#E1E1E1] border border-gray-300 px-2 py-1">
+                    <option>Alla filer</option>
+                    <option>PDF-filer (*.pdf)</option>
+                    <option>Dokument (*.doc, *.docx)</option>
+                  </select>
+                </div>
               </div>
-              <div className="flex items-center">
-                <select className="text-xs bg-white border border-gray-300 rounded px-2 py-1">
-                  <option>Alla filer</option>
-                  <option>PDF-filer (*.pdf)</option>
-                  <option>Dokument (*.doc, *.docx)</option>
-                </select>
-              </div>
-              <div className="flex space-x-2">
-                <button className="px-4 py-1 bg-[#0078d4] text-white text-xs rounded hover:bg-[#106ebe]"
+
+              {/* Second Row - Buttons */}
+              <div className="flex justify-end space-x-2">
+                <button className="px-6 py-1 bg-[#E1E1E1] border-2 border-blue-500 text-gray text-xs hover:bg-[#CECECE]"
                   onClick={() => {
                     // Send file and proceed to final message
                     addMessage('Max', 'ATTACHMENT:INT-2025-04-7731-BK.pdf');
@@ -855,7 +892,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                   Öppna
                 </button>
                 <button
-                  className="px-4 py-1 bg-white border border-gray-300 text-xs rounded hover:bg-gray-50"
+                  className="px-6 py-1 bg-[#E1E1E1] text-gray text-xs hover:bg-[#CECECE]"
                   onClick={() => setShowFileDialog(false)}
                 >
                   Avbryt
