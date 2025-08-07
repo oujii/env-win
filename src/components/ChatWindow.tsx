@@ -34,7 +34,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Scripted conversation state
-  const [messages, setMessages] = useState<Array<{id: number, sender: 'Thomas' | 'Max', text: string, timestamp: string}>>([]);
+  const [messages, setMessages] = useState<Array<{id: number, sender: 'Thomas' | 'Max', text: string}>>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isWaitingForUserInput, setIsWaitingForUserInput] = useState(false);
   const [showFileDialog, setShowFileDialog] = useState(false);
@@ -91,13 +91,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     const newMessage = {
       id: Date.now(),
       sender,
-      text,
-      timestamp: systemDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+      text
     };
     setMessages(prev => [...prev, newMessage]);
     // Auto-scroll to bottom after adding message
     setTimeout(scrollToBottom, 100);
-  }, [systemDateTime]);
+  }, []);
 
 
 
@@ -246,8 +245,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         setMessages([{
           id: Date.now(),
           sender: 'Thomas',
-          text: 'Jag behöver din hjälp',
-          timestamp: systemDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+          text: 'Jag behöver din hjälp'
         }]);
         setCurrentStep(1);
         setTimeout(scrollToBottom, 100);
@@ -585,7 +583,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                       <div className="text-sm font-[600] text-black">
                         {msg.sender === 'Thomas' ? 'Thomas Berg' : 'Max Abrahamsson'}
                       </div>
-                      <div className="text-xs text-gray-500">{msg.timestamp}</div>
                     </div>
                     <div className="text-sm text-gray-800">
                       {msg.text.startsWith('ATTACHMENT:') ? (
