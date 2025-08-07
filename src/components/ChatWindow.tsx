@@ -31,6 +31,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const [message, setMessage] = useState("");
   const windowRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Scripted conversation state
   const [messages, setMessages] = useState<Array<{id: number, sender: 'Thomas' | 'Max', text: string, timestamp: string}>>([]);
@@ -108,6 +109,16 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       setWindowSize({ width: dimensions.width, height: dimensions.height });
     }
   }, [windowSize.width, windowSize.height]);
+
+  // Focus input when window becomes active and not minimized
+  useEffect(() => {
+    if (isActive && !isMinimized && inputRef.current) {
+      // Small delay to ensure the window is fully rendered
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [isActive, isMinimized]);
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized);
@@ -622,12 +633,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10"/>
                   <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                  <line x1="9" y1="9" x2="9.01" y2="9"/>
-                  <line x1="15" y1="9" x2="15.01" y2="9"/>
+                  <circle cx="9" cy="9" r="1" fill="currentColor"/>
+                  <circle cx="15" cy="9" r="1" fill="currentColor"/> 
+
                 </svg>
               </button>
               <div className="flex-1 relative">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={message}
                   onChange={handleInputChange}

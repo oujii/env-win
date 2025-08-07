@@ -125,18 +125,6 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
             <div className="border-b border-[#e1e1e1] pb-2 mb-2">
               <div className="text-sm font-medium mb-2 pl-2">Most used</div>
               <div className="grid grid-cols-1 gap-1">
-                <Link to="/" className="flex items-center px-2 py-1.5 rounded hover:bg-[#f2f2f2]">
-                  <img src="/rescuex-icon.png" alt="ResCueX" className="w-4 h-4 mr-3" />
-                  <span className="text-sm">ResCueX</span>
-                </Link>
-                <Link to="/incident" className="flex items-center px-2 py-1.5 rounded hover:bg-[#f2f2f2]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#606060" className="mr-3">
-                    <circle cx="12" cy="12" r="10" strokeWidth="2"/>
-                    <line x1="12" y1="8" x2="12" y2="12" strokeWidth="2"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16" strokeWidth="2"/>
-                  </svg>
-                  <span className="text-sm">Incident Reporting</span>
-                </Link>
                 <button
                   onClick={handleStartaFlode}
                   className="flex items-center px-2 py-1.5 rounded hover:bg-[#f2f2f2] w-full text-left"
@@ -344,20 +332,7 @@ export const WindowsStartbar: React.FC<WindowsStartbarProps> = ({
             </svg>
           </button>
 
-          {/* Chat Application 2 Icon Button */}
-          <button
-            className={`h-full w-12 mr-2 flex items-center justify-center hover:bg-gray-800 transition-colors relative ${
-              !isChatWindow2Closed && !isChatWindow2Minimized ? 'bg-gray-800' : ''
-            } ${
-              !isChatWindow2Closed ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-500" : ""
-            }`}
-            onClick={onToggleChatWindow2} // Call the passed function
-            title="Messenger" // Update title for accessibility/tooltip
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </button>
+
           {/* Removed Incident Link */}
         </div>
 

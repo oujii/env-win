@@ -58,7 +58,7 @@ const Index: React.FC<IndexProps> = ({
       className="min-h-screen pb-12 bg-contain bg-center bg-no-repeat" // Changed to bg-contain to avoid cropping, added bg-no-repeat
       style={{
         backgroundImage: "url('/wallpaper-sos-alarm.png')",
-        backgroundColor: "#1e3a8a" // Fallback color that matches the wallpaper theme
+        backgroundColor: "#2F4459" // Fallback color that matches the wallpaper theme
       }}
     >
       {/* Pass the props down to WindowsDialog */}
