@@ -53,7 +53,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     { type: 'user_input', expectedText: '16 kvar.', delay: 0 }, // User input
     { type: 'thomas', text: 'Och I tjänst under mordnätterna?', delay: 5000 }, // 5 seconds (was 2)
     { type: 'user_input', expectedText: '1.', delay: 0 }, // User input
-    { type: 'thomas', text: 'Skicka mig hans personalakt', delay: 4000 }, // 4 seconds (was 2)
+    { type: 'thomas', text: 'Skicka mig hans personakt', delay: 4000 }, // 4 seconds (was 2)
     { type: 'file_attachment', delay: 0 }, // File attachment action
     { type: 'thomas', text: 'Tack, gamle vän.', delay: 5000 } // 5 seconds after file sent
   ];

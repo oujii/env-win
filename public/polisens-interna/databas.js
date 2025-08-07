@@ -6,7 +6,7 @@
             polisId: "P-10001", kodnr: "VF-8901", artal: 2023, kon: "Man",
             etniskBakgrund: "Svensk", anklagadVald: true,
             anstallningsdatum: "2010-01-15",
-            tjanstgoringsperioder: ["2023-03-15", "2023-06-22", "2023-09-08", "2023-11-30"],
+            tjanstgoringsperioder: ["2025-05-31", "2025-06-07", "2023-09-08", "2023-11-30"],
 
             // Personuppgifter
             adress: "Vädervägen 3, 183 55 Täby",
