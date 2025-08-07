@@ -249,7 +249,7 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
     };
   }, [currentUrl]); // Re-run if the iframe src changes (though it's static for now)
 
-  // Update iframe overlay based on window focus
+  // Only show overlay when window is definitely not active
   useEffect(() => {
     setShowIframeOverlay(!isActive);
   }, [isActive]);
@@ -335,7 +335,20 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups" // Security settings
           // onLoad is handled by useEffect now
         ></iframe>
-        {showIframeOverlay && (
+        {showIframeOverlay && !isMaximized && (
+          <div
+            className="absolute bg-transparent cursor-pointer z-10"
+            onClick={handleWindowClick}
+            title="Klicka för att fokusera fönstret"
+            style={{
+              top: 0,
+              left: 0,
+              right: '20px', // Leave space for resize handle
+              bottom: '20px' // Leave space for resize handle
+            }}
+          />
+        )}
+        {showIframeOverlay && isMaximized && (
           <div
             className="absolute inset-0 bg-transparent cursor-pointer z-10"
             onClick={handleWindowClick}
