@@ -26,6 +26,7 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
   const [currentUrl, setCurrentUrl] = useState("/polisens-interna/index.html"); // Default to polisens-interna index
   const [displayUrl, setDisplayUrl] = useState("https://192.168.1.245"); // Initial display URL
   const [title, setTitle] = useState("Polismyndigheten | DurTvå"); // Initial title
+  const [showIframeOverlay, setShowIframeOverlay] = useState(!isActive);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Windowed mode state
@@ -248,6 +249,10 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
     };
   }, [currentUrl]); // Re-run if the iframe src changes (though it's static for now)
 
+  // Update iframe overlay based on window focus
+  useEffect(() => {
+    setShowIframeOverlay(!isActive);
+  }, [isActive]);
 
   if (isMinimized || isClosed) return null; // Don't render if minimized or closed
 
@@ -321,7 +326,7 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
       </div>
 
       {/* Content Area (Iframe) */}
-      <div className={`flex-1 bg-white overflow-hidden ${!isMaximized ? 'pr-2 pb-2' : ''}`}>
+      <div className={`relative flex-1 bg-white overflow-hidden ${!isMaximized ? 'pr-2 pb-2' : ''}`}>
         <iframe
           ref={iframeRef}
           src={currentUrl}
@@ -330,6 +335,13 @@ export const WindowsDialog: React.FC<WindowsDialogProps> = ({
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups" // Security settings
           // onLoad is handled by useEffect now
         ></iframe>
+        {showIframeOverlay && (
+          <div
+            className="absolute inset-0 bg-transparent cursor-pointer z-10"
+            onClick={handleWindowClick}
+            title="Klicka för att fokusera fönstret"
+          />
+        )}
       </div>
       {/* Removed ResCueX status bar */}
     </div>

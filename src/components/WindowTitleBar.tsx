@@ -110,7 +110,7 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
           <span className="text-white text-sm font-normal">
           <div className="flex items-center -ml-4" style={{ marginBottom: '-4px' }}>
 
-  <img src="../../left.png" alt="Left S" className="bg-white h-9 pr-1"  object-contain/>
+  <img src="../left.png" alt="Left S" className="bg-white h-9 pr-1"  object-contain/>
 
 <img src="/googlefake/favicon.webp" className="bg-white w-4 pt-2 pb-3"></img>
   <button className="bg-white h-9 pl-2 pb-1.5 pr-6 text-xs rounded-none text-gray-600">
@@ -118,7 +118,7 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   </button>
   <div className="bg-white  h-9 text-gray-700 text-xl cursor-pointer">&times;</div>
 
-  <img src="../../right.png" alt="Right S" className="h-9" object-contain />
+  <img src="../right.png" alt="Right S" className="h-9" object-contain />
   <div className="bg-[#DEE1E6] -ml-0.5 -mt-1 h-9 text-gray-500 text-2xl cursor-pointer">+</div>
 </div>
 
